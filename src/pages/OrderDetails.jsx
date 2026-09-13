@@ -172,6 +172,10 @@ function OrderDetails() {
       );
     };
 
+  const deliveryPartner =
+    order?.deliveryPartner ||
+    null;
+
   const canCancel =
     [
       "pending",
@@ -196,6 +200,7 @@ function OrderDetails() {
         setCancelling(
           true
         );
+
         setError("");
 
         const data =
@@ -229,6 +234,7 @@ function OrderDetails() {
     return (
       <div className="page-loader">
         <FaSpinner className="fa-spin" />
+
         Loading order...
       </div>
     );
@@ -238,6 +244,7 @@ function OrderDetails() {
     return (
       <div className="professional-orders-page">
         <div className="professional-empty-orders">
+
           <h2>
             Unable to load order
           </h2>
@@ -255,6 +262,7 @@ function OrderDetails() {
           >
             Try Again
           </button>
+
         </div>
       </div>
     );
@@ -264,6 +272,7 @@ function OrderDetails() {
     return (
       <div className="professional-orders-page">
         <div className="professional-empty-orders">
+
           <h2>
             Order not found
           </h2>
@@ -274,34 +283,41 @@ function OrderDetails() {
           >
             My Orders
           </Link>
+
         </div>
       </div>
     );
   }
 
   const totalItems =
-    (order.items || []).reduce(
+    (
+      order.items ||
+      []
+    ).reduce(
       (
         total,
         item
       ) =>
         total +
         Number(
-          item.quantity || 0
+          item.quantity ||
+            0
         ),
       0
     );
 
   return (
     <div className="professional-orders-page">
+
       <div className="orders-page-header">
+
         <div>
+
           <Link
             to="/orders"
             className="professional-secondary-btn"
           >
             <FaArrowLeft />
-
             Back to Orders
           </Link>
 
@@ -330,7 +346,9 @@ function OrderDetails() {
               order.createdAt
             )}
           </p>
+
         </div>
+
       </div>
 
       {error && (
@@ -345,13 +363,14 @@ function OrderDetails() {
         </div>
       )}
 
-      {/* ==========================================
-          STATUS
-      ========================================== */}
+      {/* STATUS */}
 
       <section className="customer-order-card">
+
         <div className="customer-order-top">
+
           <div>
+
             <span className="customer-order-label">
               ORDER STATUS
             </span>
@@ -361,6 +380,7 @@ function OrderDetails() {
                 order.orderStatus
               )}
             </h2>
+
           </div>
 
           <div
@@ -379,18 +399,21 @@ function OrderDetails() {
               )}
             </span>
           </div>
+
         </div>
+
       </section>
 
-      {/* ==========================================
-          SHOP
-      ========================================== */}
+      {/* SHOP */}
 
       <section className="customer-order-card">
+
         <div className="customer-order-shop">
+
           <FaStore />
 
           <div>
+
             <span>
               SHOP
             </span>
@@ -400,23 +423,30 @@ function OrderDetails() {
                 ?.shopName ||
                 "FreshCart Shop"}
             </strong>
+
           </div>
+
         </div>
 
         {order.shop?.city && (
           <p>
-            📍 {order.shop.city}
+            📍{" "}
+            {
+              order.shop.city
+            }
           </p>
         )}
+
       </section>
 
-      {/* ==========================================
-          ITEMS
-      ========================================== */}
+      {/* ITEMS */}
 
       <section className="customer-order-card">
+
         <div className="customer-order-top">
+
           <div>
+
             <span className="customer-order-label">
               ITEMS
             </span>
@@ -428,10 +458,13 @@ function OrderDetails() {
                 ? "Item"
                 : "Items"}
             </h2>
+
           </div>
+
         </div>
 
         <div className="customer-order-items">
+
           {(
             order.items ||
             []
@@ -447,7 +480,9 @@ function OrderDetails() {
                   index
                 }
               >
+
                 <div className="customer-order-item-image">
+
                   {item.image ? (
                     <img
                       src={
@@ -462,9 +497,11 @@ function OrderDetails() {
                       🥬
                     </span>
                   )}
+
                 </div>
 
                 <div className="customer-order-item-info">
+
                   <strong>
                     {item.name}
                   </strong>
@@ -482,6 +519,7 @@ function OrderDetails() {
                       item.quantity
                     }
                   </span>
+
                 </div>
 
                 <strong>
@@ -493,21 +531,25 @@ function OrderDetails() {
                     2
                   )}
                 </strong>
+
               </div>
             )
           )}
+
         </div>
+
       </section>
 
-      {/* ==========================================
-          DELIVERY
-      ========================================== */}
+      {/* DELIVERY */}
 
       <section className="customer-order-card">
+
         <div className="customer-order-shop">
+
           <FaMapMarkerAlt />
 
           <div>
+
             <span>
               DELIVERY ADDRESS
             </span>
@@ -517,11 +559,15 @@ function OrderDetails() {
                 ?.name ||
                 "Customer"}
             </strong>
+
           </div>
+
         </div>
 
         <p>
-          {order.deliveryAddress}
+          {
+            order.deliveryAddress
+          }
         </p>
 
         <p>
@@ -530,14 +576,15 @@ function OrderDetails() {
             order.customerPhone
           }
         </p>
+
       </section>
 
-      {/* ==========================================
-          PAYMENT
-      ========================================== */}
+      {/* PAYMENT */}
 
       <section className="customer-order-card">
+
         <div className="customer-order-details">
+
           <div>
             <span>
               Payment Method
@@ -576,15 +623,17 @@ function OrderDetails() {
               </strong>
             </div>
           )}
+
         </div>
+
       </section>
 
-      {/* ==========================================
-          TOTAL
-      ========================================== */}
+      {/* TOTAL */}
 
       <section className="customer-order-card">
+
         <div className="customer-order-total">
+
           <div>
             <span>
               Subtotal
@@ -618,6 +667,7 @@ function OrderDetails() {
           </div>
 
           <div className="customer-order-grand-total">
+
             <span>
               Total
             </span>
@@ -631,8 +681,80 @@ function OrderDetails() {
                 2
               )}
             </strong>
+
           </div>
+
         </div>
+
+        {deliveryPartner && (
+          <div
+            style={{
+              marginTop:
+                "24px",
+
+              padding:
+                "18px",
+
+              borderRadius:
+                "16px",
+
+              background:
+                "#f0fdf4",
+
+              border:
+                "1px solid #bbf7d0",
+            }}
+          >
+
+            <h3
+              style={{
+                marginTop:
+                  0,
+              }}
+            >
+              🚚 Delivery Partner
+            </h3>
+
+            <p>
+              <strong>
+                {
+                  deliveryPartner.name
+                }
+              </strong>
+            </p>
+
+            <p>
+              Phone:{" "}
+              {
+                deliveryPartner.phone ||
+                "N/A"
+              }
+            </p>
+
+            <p>
+              Status:{" "}
+              {
+                order.deliveryAssignmentStatus ||
+                "assigned"
+              }
+            </p>
+
+            <p
+              style={{
+                marginBottom:
+                  0,
+              }}
+            >
+              Delivery status:{" "}
+              {
+                statusLabel(
+                  order.orderStatus
+                )
+              }
+            </p>
+
+          </div>
+        )}
 
         {canCancel && (
           <button
@@ -648,27 +770,25 @@ function OrderDetails() {
             {cancelling ? (
               <>
                 <FaSpinner className="fa-spin" />
-
                 Cancelling...
               </>
             ) : (
               <>
                 <FaTimesCircle />
-
                 Cancel Order
               </>
             )}
           </button>
         )}
+
       </section>
 
-      {/* ==========================================
-          SPLIT ORDERS
-      ========================================== */}
+      {/* SPLIT ORDERS */}
 
       {relatedOrders.length >
         1 && (
         <section className="customer-order-card">
+
           <span className="customer-order-label">
             SAME CHECKOUT
           </span>
@@ -698,22 +818,28 @@ function OrderDetails() {
                   )
                 }
               >
+
                 <FaStore />
 
                 {related.shop
                   ?.shopName ||
                   "Shop"}{" "}
+
                 ·{" "}
+
                 {
                   statusLabel(
                     related.orderStatus
                   )
                 }
+
               </button>
             )
           )}
+
         </section>
       )}
+
     </div>
   );
 }

@@ -23,6 +23,8 @@ import {
 import {
   getShopkeeperOrders,
   updateOrderStatus,
+  getAvailableDeliveryPartners,
+  assignDeliveryPartner,
 } from "../api/api";
 
 import "./shopkeeper.css";
@@ -31,29 +33,65 @@ function ShopkeeperOrders() {
   const navigate =
     useNavigate();
 
-  const [orders, setOrders] =
-    useState([]);
+  const [
+    orders,
+    setOrders,
+  ] = useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    partners,
+    setPartners,
+  ] = useState([]);
 
-  const [updatingId, setUpdatingId] =
-    useState("");
+  const [
+    partnerSelections,
+    setPartnerSelections,
+  ] = useState({});
 
-  const [filter, setFilter] =
-    useState("all");
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-  const [message, setMessage] =
-    useState("");
+  const [
+    updatingId,
+    setUpdatingId,
+  ] = useState("");
 
-  const [error, setError] =
-    useState("");
+  const [
+    assigningId,
+    setAssigningId,
+  ] = useState("");
+
+  const [
+    filter,
+    setFilter,
+  ] = useState(
+    "all"
+  );
+
+  const [
+    message,
+    setMessage,
+  ] = useState("");
+
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  /* =====================================================
+     LOAD
+  ===================================================== */
 
   const loadOrders =
     useCallback(
       async () => {
         try {
-          setLoading(true);
+          setLoading(
+            true
+          );
+
           setError("");
 
           const data =
@@ -66,13 +104,39 @@ function ShopkeeperOrders() {
               ? data.orders
               : []
           );
-        } catch (error) {
+
+          try {
+            const partnerData =
+              await getAvailableDeliveryPartners();
+
+            setPartners(
+              Array.isArray(
+                partnerData?.partners
+              )
+                ? partnerData.partners
+                : []
+            );
+          } catch (
+            partnerError
+          ) {
+            console.error(
+              "Unable to load delivery partners:",
+              partnerError
+            );
+
+            setPartners([]);
+          }
+        } catch (
+          error
+        ) {
           setError(
             error.message ||
               "Unable to load shop orders."
           );
         } finally {
-          setLoading(false);
+          setLoading(
+            false
+          );
         }
       },
       []
@@ -80,12 +144,19 @@ function ShopkeeperOrders() {
 
   useEffect(() => {
     loadOrders();
-  }, [loadOrders]);
+  }, [
+    loadOrders,
+  ]);
+
+  /* =====================================================
+     FILTER
+  ===================================================== */
 
   const filteredOrders =
     useMemo(() => {
       if (
-        filter === "all"
+        filter ===
+        "all"
       ) {
         return orders;
       }
@@ -95,7 +166,14 @@ function ShopkeeperOrders() {
           order.orderStatus ===
           filter
       );
-    }, [orders, filter]);
+    }, [
+      orders,
+      filter,
+    ]);
+
+  /* =====================================================
+     HELPERS
+  ===================================================== */
 
   const formatDate =
     (date) =>
@@ -107,6 +185,7 @@ function ShopkeeperOrders() {
             {
               dateStyle:
                 "medium",
+
               timeStyle:
                 "short",
             }
@@ -115,15 +194,23 @@ function ShopkeeperOrders() {
 
   const statusIcon =
     (status) => {
-      switch (status) {
+      switch (
+        status
+      ) {
         case "confirmed":
-          return <FaCheck />;
+          return (
+            <FaCheck />
+          );
 
         case "preparing":
-          return <FaBox />;
+          return (
+            <FaBox />
+          );
 
         case "out_for_delivery":
-          return <FaTruck />;
+          return (
+            <FaTruck />
+          );
 
         case "delivered":
           return (
@@ -131,7 +218,9 @@ function ShopkeeperOrders() {
           );
 
         case "cancelled":
-          return <FaTimes />;
+          return (
+            <FaTimes />
+          );
 
         default:
           return (
@@ -139,6 +228,10 @@ function ShopkeeperOrders() {
           );
       }
     };
+
+  /* =====================================================
+     ORDER STATUS
+  ===================================================== */
 
   const handleStatus =
     async (
@@ -171,6 +264,7 @@ function ShopkeeperOrders() {
                   ? updated ||
                     {
                       ...order,
+
                       orderStatus:
                         status,
                     }
@@ -181,7 +275,9 @@ function ShopkeeperOrders() {
         setMessage(
           "Order status updated successfully."
         );
-      } catch (error) {
+      } catch (
+        error
+      ) {
         setError(
           error.message ||
             "Unable to update order."
@@ -190,6 +286,74 @@ function ShopkeeperOrders() {
         setUpdatingId("");
       }
     };
+
+  /* =====================================================
+     ASSIGN PARTNER
+  ===================================================== */
+
+  const handleAssignPartner =
+    async (
+      orderId
+    ) => {
+      const partnerId =
+        partnerSelections[
+          orderId
+        ];
+
+      if (!partnerId) {
+        setError(
+          "Select a delivery partner first."
+        );
+
+        return;
+      }
+
+      try {
+        setAssigningId(
+          orderId
+        );
+
+        setError("");
+        setMessage("");
+
+        const data =
+          await assignDeliveryPartner(
+            orderId,
+            partnerId
+          );
+
+        setOrders(
+          (current) =>
+            current.map(
+              (order) =>
+                order._id ===
+                orderId
+                  ? data?.order ||
+                    order
+                  : order
+            )
+        );
+
+        setMessage(
+          "Delivery partner assigned successfully."
+        );
+      } catch (
+        error
+      ) {
+        setError(
+          error.message ||
+            "Unable to assign delivery partner."
+        );
+      } finally {
+        setAssigningId(
+          ""
+        );
+      }
+    };
+
+  /* =====================================================
+     AVAILABLE ACTIONS
+  ===================================================== */
 
   const availableActions =
     (order) => {
@@ -201,16 +365,21 @@ function ShopkeeperOrders() {
             {
               label:
                 "Confirm",
+
               status:
                 "confirmed",
+
               className:
                 "shopkeeper-order-success",
             },
+
             {
               label:
                 "Cancel",
+
               status:
                 "cancelled",
+
               className:
                 "shopkeeper-order-danger",
             },
@@ -221,16 +390,21 @@ function ShopkeeperOrders() {
             {
               label:
                 "Start Preparing",
+
               status:
                 "preparing",
+
               className:
                 "shopkeeper-order-primary",
             },
+
             {
               label:
                 "Cancel",
+
               status:
                 "cancelled",
+
               className:
                 "shopkeeper-order-danger",
             },
@@ -241,51 +415,64 @@ function ShopkeeperOrders() {
             {
               label:
                 "Out for Delivery",
+
               status:
                 "out_for_delivery",
+
               className:
                 "shopkeeper-order-primary",
             },
+
             {
               label:
                 "Cancel",
+
               status:
                 "cancelled",
+
               className:
                 "shopkeeper-order-danger",
             },
           ];
 
+        /*
+          Once the delivery partner
+          accepts the delivery, the
+          partner completes delivery.
+        */
+
         case "out_for_delivery":
-          return [
-            {
-              label:
-                "Mark Delivered",
-              status:
-                "delivered",
-              className:
-                "shopkeeper-order-success",
-            },
-          ];
+          return [];
 
         default:
           return [];
       }
     };
 
+  /* =====================================================
+     LOADING
+  ===================================================== */
+
   if (loading) {
     return (
       <div className="shopkeeper-page-loader">
+
         <FaSpinner className="fa-spin" />
+
         Loading your shop
         orders...
+
       </div>
     );
   }
 
   return (
     <div className="shopkeeper-orders-page">
+
+      {/* TOP BAR */}
+
       <div className="shopkeeper-orders-topbar">
+
         <button
           type="button"
           className="shopkeeper-orders-back"
@@ -298,10 +485,15 @@ function ShopkeeperOrders() {
           <FaArrowLeft />
           Back to Dashboard
         </button>
+
       </div>
 
+      {/* HEADER */}
+
       <div className="shopkeeper-orders-header">
+
         <div>
+
           <span>
             SHOPKEEPER
           </span>
@@ -314,16 +506,22 @@ function ShopkeeperOrders() {
             These orders belong only
             to your shop.
           </p>
+
         </div>
 
         <button
           type="button"
           className="shopkeeper-refresh-btn"
-          onClick={loadOrders}
+          onClick={
+            loadOrders
+          }
         >
           Refresh
         </button>
+
       </div>
+
+      {/* MESSAGE */}
 
       {message && (
         <div className="shopkeeper-success-message">
@@ -337,29 +535,41 @@ function ShopkeeperOrders() {
         </div>
       )}
 
+      {/* FILTERS */}
+
       <div className="shopkeeper-order-filters">
+
         {[
-          ["all", "All"],
+          [
+            "all",
+            "All",
+          ],
+
           [
             "pending",
             "Pending",
           ],
+
           [
             "confirmed",
             "Confirmed",
           ],
+
           [
             "preparing",
             "Preparing",
           ],
+
           [
             "out_for_delivery",
             "Out for Delivery",
           ],
+
           [
             "delivered",
             "Delivered",
           ],
+
           [
             "cancelled",
             "Cancelled",
@@ -371,9 +581,12 @@ function ShopkeeperOrders() {
           ]) => (
             <button
               type="button"
-              key={value}
+              key={
+                value
+              }
               className={
-                filter === value
+                filter ===
+                value
                   ? "active"
                   : ""
               }
@@ -383,6 +596,7 @@ function ShopkeeperOrders() {
                 )
               }
             >
+
               {label}
 
               <strong>
@@ -398,14 +612,21 @@ function ShopkeeperOrders() {
                   ).length
                 }
               </strong>
+
             </button>
           )
         )}
+
       </div>
+
+      {/* EMPTY */}
 
       {!filteredOrders.length ? (
         <div className="shopkeeper-empty-orders">
-          <FaBox size={42} />
+
+          <FaBox
+            size={42}
+          />
 
           <h2>
             No orders found
@@ -415,23 +636,46 @@ function ShopkeeperOrders() {
             Orders matching this
             filter will appear here.
           </p>
+
         </div>
       ) : (
+
         <div className="shopkeeper-order-list">
+
           {filteredOrders.map(
-            (order) => {
+            (
+              order
+            ) => {
+
               const actions =
                 availableActions(
                   order
                 );
 
+              const canAssign =
+                [
+                  "confirmed",
+                  "preparing",
+                ].includes(
+                  order.orderStatus
+                ) &&
+                order.deliveryAssignmentStatus !==
+                  "accepted";
+
               return (
                 <article
-                  key={order._id}
+                  key={
+                    order._id
+                  }
                   className="shopkeeper-order-card"
                 >
+
+                  {/* HEADER */}
+
                   <div className="shopkeeper-order-card-top">
+
                     <div>
+
                       <span>
                         ORDER
                       </span>
@@ -450,23 +694,32 @@ function ShopkeeperOrders() {
                           order.createdAt
                         )}
                       </p>
+
                     </div>
 
                     <div
                       className={`shopkeeper-status ${order.orderStatus}`}
                     >
+
                       {statusIcon(
                         order.orderStatus
                       )}
 
-                      {order.orderStatus.replaceAll(
+                      {String(
+                        order.orderStatus
+                      ).replaceAll(
                         "_",
                         " "
                       )}
+
                     </div>
+
                   </div>
 
+                  {/* SHOP */}
+
                   <div className="shopkeeper-order-shop">
+
                     <FaStore />
 
                     <strong>
@@ -474,10 +727,15 @@ function ShopkeeperOrders() {
                         ?.shopName ||
                         "Your Shop"}
                     </strong>
+
                   </div>
 
+                  {/* CUSTOMER */}
+
                   <div className="shopkeeper-customer">
+
                     <div>
+
                       <span>
                         CUSTOMER
                       </span>
@@ -487,9 +745,11 @@ function ShopkeeperOrders() {
                           ?.name ||
                           "Customer"}
                       </strong>
+
                     </div>
 
                     <div>
+
                       <span>
                         PHONE
                       </span>
@@ -500,10 +760,15 @@ function ShopkeeperOrders() {
                             ?.phone ||
                           "N/A"}
                       </strong>
+
                     </div>
+
                   </div>
 
+                  {/* ITEMS */}
+
                   <div className="shopkeeper-order-items">
+
                     {(
                       order.items ||
                       []
@@ -519,7 +784,9 @@ function ShopkeeperOrders() {
                           }
                           className="shopkeeper-order-item"
                         >
+
                           <div>
+
                             <strong>
                               {
                                 item.name
@@ -539,6 +806,7 @@ function ShopkeeperOrders() {
                                 item.quantity
                               }
                             </span>
+
                           </div>
 
                           <strong>
@@ -550,12 +818,17 @@ function ShopkeeperOrders() {
                               2
                             )}
                           </strong>
+
                         </div>
                       )
                     )}
+
                   </div>
 
+                  {/* ADDRESS */}
+
                   <div className="shopkeeper-order-address">
+
                     <span>
                       DELIVERY ADDRESS
                     </span>
@@ -565,10 +838,15 @@ function ShopkeeperOrders() {
                         order.deliveryAddress
                       }
                     </p>
+
                   </div>
 
+                  {/* PAYMENT */}
+
                   <div className="shopkeeper-order-payment">
+
                     <div>
+
                       <span>
                         PAYMENT
                       </span>
@@ -579,9 +857,11 @@ function ShopkeeperOrders() {
                           ? "Online Payment"
                           : "Cash on Delivery"}
                       </strong>
+
                     </div>
 
                     <div>
+
                       <span>
                         PAYMENT STATUS
                       </span>
@@ -591,9 +871,11 @@ function ShopkeeperOrders() {
                           order.paymentStatus
                         }
                       </strong>
+
                     </div>
 
                     <div className="shopkeeper-order-total">
+
                       <span>
                         TOTAL
                       </span>
@@ -607,12 +889,264 @@ function ShopkeeperOrders() {
                           2
                         )}
                       </strong>
+
                     </div>
+
                   </div>
+
+                  {/* DELIVERY PARTNER ASSIGNMENT */}
+
+                  {canAssign && (
+                    <div
+                      style={{
+                        marginTop:
+                          "16px",
+
+                        padding:
+                          "14px",
+
+                        borderRadius:
+                          "12px",
+
+                        background:
+                          "#f8fafc",
+
+                        border:
+                          "1px solid #e2e8f0",
+                      }}
+                    >
+
+                      <strong
+                        style={{
+                          display:
+                            "block",
+
+                          marginBottom:
+                            "8px",
+                        }}
+                      >
+                        Delivery Partner
+                      </strong>
+
+                      {order.deliveryAssignmentStatus ===
+                      "pending" ? (
+                        <p
+                          style={{
+                            margin:
+                              0,
+
+                            color:
+                              "#64748b",
+                          }}
+                        >
+                          Waiting for the assigned
+                          delivery partner to accept
+                          this delivery.
+                        </p>
+                      ) : (
+
+                        <div
+                          style={{
+                            display:
+                              "flex",
+
+                            gap:
+                              "8px",
+
+                            flexWrap:
+                              "wrap",
+                          }}
+                        >
+
+                          <select
+                            value={
+                              partnerSelections[
+                                order._id
+                              ] ||
+                              ""
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              setPartnerSelections(
+                                (
+                                  current
+                                ) => ({
+                                  ...current,
+
+                                  [order._id]:
+                                    event
+                                      .target
+                                      .value,
+                                })
+                              )
+                            }
+                            style={{
+                              flex:
+                                "1 1 240px",
+
+                              padding:
+                                "10px",
+
+                              borderRadius:
+                                "8px",
+
+                              border:
+                                "1px solid #cbd5e1",
+                            }}
+                          >
+
+                            <option value="">
+                              Select available partner
+                            </option>
+
+                            {partners.map(
+                              (
+                                partner
+                              ) => (
+                                <option
+                                  key={
+                                    partner._id
+                                  }
+                                  value={
+                                    partner._id
+                                  }
+                                >
+                                  {partner.name}
+                                  {" · "}
+                                  {partner.phone}
+                                </option>
+                              )
+                            )}
+
+                          </select>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleAssignPartner(
+                                order._id
+                              )
+                            }
+                            disabled={
+                              assigningId ===
+                                order._id ||
+                              !partners.length
+                            }
+                            style={{
+                              border:
+                                0,
+
+                              borderRadius:
+                                "8px",
+
+                              padding:
+                                "10px 14px",
+
+                              background:
+                                "#166534",
+
+                              color:
+                                "white",
+
+                              fontWeight:
+                                700,
+                            }}
+                          >
+
+                            {assigningId ===
+                            order._id ? (
+                              <FaSpinner className="fa-spin" />
+                            ) : (
+                              "Assign"
+                            )}
+
+                          </button>
+
+                        </div>
+
+                      )}
+
+                    </div>
+                  )}
+
+                  {/* ACCEPTED PARTNER */}
+
+                  {order.deliveryAssignmentStatus ===
+                    "accepted" &&
+                    order.deliveryPartner && (
+                      <div
+                        style={{
+                          marginTop:
+                            "16px",
+
+                          padding:
+                            "14px",
+
+                          borderRadius:
+                            "12px",
+
+                          background:
+                            "#f0fdf4",
+
+                          border:
+                            "1px solid #bbf7d0",
+                        }}
+                      >
+
+                        <strong>
+                          Delivery Partner Accepted
+                        </strong>
+
+                        <p
+                          style={{
+                            margin:
+                              "6px 0 0",
+                          }}
+                        >
+                          {
+                            order.deliveryPartner
+                              .name
+                          }
+
+                          {" · "}
+
+                          {order
+                            .deliveryPartner
+                            .phone ||
+                            "N/A"}
+                        </p>
+
+                        <p
+                          style={{
+                            margin:
+                              "6px 0 0",
+
+                            color:
+                              "#166534",
+
+                            fontWeight:
+                              700,
+                          }}
+                        >
+                          Earning: ₹
+                          {Number(
+                            order.deliveryPartnerEarning ||
+                              0
+                          ).toFixed(
+                            2
+                          )}
+                        </p>
+
+                      </div>
+                    )}
+
+                  {/* ACTIONS */}
 
                   {actions.length >
                     0 && (
                     <div className="shopkeeper-order-actions">
+
                       {actions.map(
                         (
                           action
@@ -636,6 +1170,7 @@ function ShopkeeperOrders() {
                               )
                             }
                           >
+
                             {updatingId ===
                             order._id ? (
                               <FaSpinner className="fa-spin" />
@@ -644,17 +1179,23 @@ function ShopkeeperOrders() {
                             {
                               action.label
                             }
+
                           </button>
                         )
                       )}
+
                     </div>
                   )}
+
                 </article>
               );
             }
           )}
+
         </div>
+
       )}
+
     </div>
   );
 }

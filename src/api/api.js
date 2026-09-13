@@ -22,9 +22,13 @@ export const getToken = () => {
 export const getUser = () => {
   try {
     const raw =
-      localStorage.getItem("user");
+      localStorage.getItem(
+        "user"
+      );
 
-    return raw ? JSON.parse(raw) : null;
+    return raw
+      ? JSON.parse(raw)
+      : null;
   } catch {
     return null;
   }
@@ -49,10 +53,16 @@ export const saveAuthData = (
   }
 };
 
-export const clearAuthData = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-};
+export const clearAuthData =
+  () => {
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "user"
+    );
+  };
 
 /* =====================================================
    REQUEST
@@ -62,23 +72,33 @@ export const apiRequest = async (
   endpoint,
   options = {}
 ) => {
-  const token = getToken();
+  const token =
+    getToken();
 
   const isFormData =
-    typeof FormData !== "undefined" &&
-    options.body instanceof FormData;
+    typeof FormData !==
+      "undefined" &&
+    options.body instanceof
+      FormData;
 
   const headers = {
-    Accept: "application/json",
-    ...(options.headers || {}),
+    Accept:
+      "application/json",
+
+    ...(options.headers ||
+      {}),
   };
 
   if (
     options.body &&
     !isFormData &&
-    !headers["Content-Type"]
+    !headers[
+      "Content-Type"
+    ]
   ) {
-    headers["Content-Type"] =
+    headers[
+      "Content-Type"
+    ] =
       "application/json";
   }
 
@@ -90,30 +110,35 @@ export const apiRequest = async (
   const controller =
     new AbortController();
 
-  const timeoutId = window.setTimeout(
-    () => {
-      controller.abort();
-    },
-    API_TIMEOUT_MS
-  );
+  const timeoutId =
+    window.setTimeout(
+      () => {
+        controller.abort();
+      },
+      API_TIMEOUT_MS
+    );
 
   let response;
 
   try {
-    response = await fetch(
-      `${API_BASE_URL}${endpoint}`,
-      {
-        ...options,
+    response =
+      await fetch(
+        `${API_BASE_URL}${endpoint}`,
+        {
+          ...options,
 
-        signal:
-          options.signal ||
-          controller.signal,
+          signal:
+            options.signal ||
+            controller.signal,
 
-        headers,
-      }
-    );
+          headers,
+        }
+      );
   } catch (error) {
-    if (error?.name === "AbortError") {
+    if (
+      error?.name ===
+      "AbortError"
+    ) {
       throw new Error(
         "The request took too long. Please check your connection and try again."
       );
@@ -128,7 +153,9 @@ export const apiRequest = async (
       "Unable to connect to FreshCart. Please check your connection and try again."
     );
   } finally {
-    window.clearTimeout(timeoutId);
+    window.clearTimeout(
+      timeoutId
+    );
   }
 
   let data = {};
@@ -144,30 +171,36 @@ export const apiRequest = async (
         "application/json"
       )
     ) {
-      data = await response.json();
+      data =
+        await response.json();
     } else {
       const text =
         await response.text();
 
       data = {
-        message: text,
+        message:
+          text,
       };
     }
   } catch {
     data = {};
   }
 
-  if (!response.ok) {
-    const error = new Error(
-      data.message ||
-        data.error ||
-        `Request failed (${response.status})`
-    );
+  if (
+    !response.ok
+  ) {
+    const error =
+      new Error(
+        data.message ||
+          data.error ||
+          `Request failed (${response.status})`
+      );
 
     error.status =
       response.status;
 
-    error.response = data;
+    error.response =
+      data;
 
     throw error;
   }
@@ -185,10 +218,13 @@ export const registerUser = (
   apiRequest(
     "/auth/register",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
-        JSON.stringify(userData),
+        JSON.stringify(
+          userData
+        ),
     }
   );
 
@@ -198,10 +234,13 @@ export const loginUser = (
   apiRequest(
     "/auth/login",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
-        JSON.stringify(loginData),
+        JSON.stringify(
+          loginData
+        ),
     }
   );
 
@@ -213,55 +252,62 @@ export const verifyLoginOtp = ({
   apiRequest(
     "/auth/verify-otp",
     {
-      method: "POST",
+      method:
+        "POST",
 
-      body: JSON.stringify({
-        email,
-        password,
-        otp,
-      }),
+      body:
+        JSON.stringify({
+          email,
+          password,
+          otp,
+        }),
     }
   );
 
-export const resendOtp = (email) =>
-  apiRequest(
-    "/auth/resend-otp",
-    {
-      method: "POST",
+export const resendOtp =
+  (email) =>
+    apiRequest(
+      "/auth/resend-otp",
+      {
+        method:
+          "POST",
 
-      body: JSON.stringify({
-        email,
-      }),
-    }
-  );
+        body:
+          JSON.stringify({
+            email,
+          }),
+      }
+    );
 
-export const forgotPassword = (
-  email
-) =>
-  apiRequest(
-    "/auth/forgot-password",
-    {
-      method: "POST",
+export const forgotPassword =
+  (email) =>
+    apiRequest(
+      "/auth/forgot-password",
+      {
+        method:
+          "POST",
 
-      body: JSON.stringify({
-        email,
-      }),
-    }
-  );
+        body:
+          JSON.stringify({
+            email,
+          }),
+      }
+    );
 
-export const resendResetOtp = (
-  email
-) =>
-  apiRequest(
-    "/auth/resend-reset-otp",
-    {
-      method: "POST",
+export const resendResetOtp =
+  (email) =>
+    apiRequest(
+      "/auth/resend-reset-otp",
+      {
+        method:
+          "POST",
 
-      body: JSON.stringify({
-        email,
-      }),
-    }
-  );
+        body:
+          JSON.stringify({
+            email,
+          }),
+      }
+    );
 
 export const resetPassword = ({
   email,
@@ -271,13 +317,15 @@ export const resetPassword = ({
   apiRequest(
     "/auth/reset-password",
     {
-      method: "POST",
+      method:
+        "POST",
 
-      body: JSON.stringify({
-        email,
-        otp,
-        newPassword,
-      }),
+      body:
+        JSON.stringify({
+          email,
+          otp,
+          newPassword,
+        }),
     }
   );
 
@@ -285,8 +333,11 @@ export const resetPassword = ({
    PROFILE
 ===================================================== */
 
-export const getProfile = () =>
-  apiRequest("/users/profile");
+export const getProfile =
+  () =>
+    apiRequest(
+      "/users/profile"
+    );
 
 export const updateProfile = (
   profileData
@@ -294,10 +345,13 @@ export const updateProfile = (
   apiRequest(
     "/users/profile",
     {
-      method: "PUT",
+      method:
+        "PUT",
 
       body:
-        JSON.stringify(profileData),
+        JSON.stringify(
+          profileData
+        ),
     }
   );
 
@@ -308,12 +362,14 @@ export const changePassword = ({
   apiRequest(
     "/users/change-password",
     {
-      method: "PUT",
+      method:
+        "PUT",
 
-      body: JSON.stringify({
-        currentPassword,
-        newPassword,
-      }),
+      body:
+        JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
     }
   );
 
@@ -321,116 +377,162 @@ export const changePassword = ({
    PRODUCTS
 ===================================================== */
 
-export const getProducts = async ({
-  search = "",
-  category = "All",
-  minPrice = "",
-  maxPrice = "",
-  stock = "",
-  shop = "",
-  city = "",
-  latitude = "",
-  longitude = "",
-  sort = "newest",
-  includeOutOfStock = true,
-} = {}) => {
-  const params =
-    new URLSearchParams();
+export const getProducts =
+  async ({
+    search = "",
+    category = "All",
+    minPrice = "",
+    maxPrice = "",
+    stock = "",
+    shop = "",
+    city = "",
+    latitude = "",
+    longitude = "",
+    sort = "newest",
+    includeOutOfStock = true,
+  } = {}) => {
+    const params =
+      new URLSearchParams();
 
-  if (String(search).trim()) {
+    if (
+      String(
+        search
+      ).trim()
+    ) {
+      params.set(
+        "search",
+        String(
+          search
+        ).trim()
+      );
+    }
+
+    if (
+      category &&
+      category !==
+        "All"
+    ) {
+      params.set(
+        "category",
+        category
+      );
+    }
+
+    if (
+      minPrice !==
+        "" &&
+      minPrice !==
+        null &&
+      minPrice !==
+        undefined
+    ) {
+      params.set(
+        "minPrice",
+        String(
+          minPrice
+        )
+      );
+    }
+
+    if (
+      maxPrice !==
+        "" &&
+      maxPrice !==
+        null &&
+      maxPrice !==
+        undefined
+    ) {
+      params.set(
+        "maxPrice",
+        String(
+          maxPrice
+        )
+      );
+    }
+
+    if (
+      stock !==
+      ""
+    ) {
+      params.set(
+        "stock",
+        String(
+          stock
+        )
+      );
+    }
+
+    if (shop) {
+      params.set(
+        "shop",
+        shop
+      );
+    }
+
+    if (city) {
+      params.set(
+        "city",
+        city
+      );
+    }
+
+    if (
+      latitude !==
+        "" &&
+      latitude !==
+        null &&
+      latitude !==
+        undefined
+    ) {
+      params.set(
+        "latitude",
+        String(
+          latitude
+        )
+      );
+    }
+
+    if (
+      longitude !==
+        "" &&
+      longitude !==
+        null &&
+      longitude !==
+        undefined
+    ) {
+      params.set(
+        "longitude",
+        String(
+          longitude
+        )
+      );
+    }
+
+    if (sort) {
+      params.set(
+        "sort",
+        sort
+      );
+    }
+
     params.set(
-      "search",
-      String(search).trim()
+      "includeOutOfStock",
+      String(
+        includeOutOfStock
+      )
     );
-  }
 
-  if (
-    category &&
-    category !== "All"
-  ) {
-    params.set(
-      "category",
-      category
+    const query =
+      params.toString();
+
+    return apiRequest(
+      `/products${
+        query
+          ? `?${query}`
+          : ""
+      }`
     );
-  }
-
-  if (
-    minPrice !== "" &&
-    minPrice !== null &&
-    minPrice !== undefined
-  ) {
-    params.set(
-      "minPrice",
-      String(minPrice)
-    );
-  }
-
-  if (
-    maxPrice !== "" &&
-    maxPrice !== null &&
-    maxPrice !== undefined
-  ) {
-    params.set(
-      "maxPrice",
-      String(maxPrice)
-    );
-  }
-
-  if (stock !== "") {
-    params.set(
-      "stock",
-      String(stock)
-    );
-  }
-
-  if (shop) {
-    params.set("shop", shop);
-  }
-
-  if (city) {
-    params.set("city", city);
-  }
-
-  if (
-    latitude !== "" &&
-    latitude !== null &&
-    latitude !== undefined
-  ) {
-    params.set(
-      "latitude",
-      String(latitude)
-    );
-  }
-
-  if (
-    longitude !== "" &&
-    longitude !== null &&
-    longitude !== undefined
-  ) {
-    params.set(
-      "longitude",
-      String(longitude)
-    );
-  }
-
-  if (sort) {
-    params.set("sort", sort);
-  }
-
-  params.set(
-    "includeOutOfStock",
-    String(includeOutOfStock)
-  );
-
-  const query =
-    params.toString();
-
-  return apiRequest(
-    `/products${
-      query ? `?${query}` : ""
-    }`
-  );
-};
+  };
 
 export const getProductDiscoveryFilters =
   () =>
@@ -438,10 +540,11 @@ export const getProductDiscoveryFilters =
       "/products/discovery/filters"
     );
 
-export const getProduct = (id) =>
-  apiRequest(
-    `/products/${id}`
-  );
+export const getProduct =
+  (id) =>
+    apiRequest(
+      `/products/${id}`
+    );
 
 export const addProduct = (
   productData
@@ -449,9 +552,11 @@ export const addProduct = (
   apiRequest(
     "/products",
     {
-      method: "POST",
+      method:
+        "POST",
 
-      body: productData,
+      body:
+        productData,
     }
   );
 
@@ -462,33 +567,39 @@ export const updateProduct = (
   apiRequest(
     `/products/${id}`,
     {
-      method: "PUT",
+      method:
+        "PUT",
 
-      body: productData,
+      body:
+        productData,
     }
   );
 
-export const deleteProduct = (
-  id
-) =>
-  apiRequest(
-    `/products/${id}`,
-    {
-      method: "DELETE",
-    }
-  );
+export const deleteProduct =
+  (id) =>
+    apiRequest(
+      `/products/${id}`,
+      {
+        method:
+          "DELETE",
+      }
+    );
 
-export const getMyProducts = () =>
-  apiRequest(
-    "/products/my-products"
-  );
+export const getMyProducts =
+  () =>
+    apiRequest(
+      "/products/my-products"
+    );
 
 /* =====================================================
    CART
 ===================================================== */
 
-export const getCart = () =>
-  apiRequest("/cart");
+export const getCart =
+  () =>
+    apiRequest(
+      "/cart"
+    );
 
 export const addProductToCart = (
   productId,
@@ -497,12 +608,14 @@ export const addProductToCart = (
   apiRequest(
     "/cart/add",
     {
-      method: "POST",
+      method:
+        "POST",
 
-      body: JSON.stringify({
-        productId,
-        quantity,
-      }),
+      body:
+        JSON.stringify({
+          productId,
+          quantity,
+        }),
     }
   );
 
@@ -513,32 +626,36 @@ export const updateCartItem = (
   apiRequest(
     "/cart/update",
     {
-      method: "PATCH",
+      method:
+        "PATCH",
 
-      body: JSON.stringify({
-        productId,
-        quantity,
-      }),
+      body:
+        JSON.stringify({
+          productId,
+          quantity,
+        }),
     }
   );
 
-export const removeCartItem = (
-  productId
-) =>
-  apiRequest(
-    `/cart/remove/${productId}`,
-    {
-      method: "DELETE",
-    }
-  );
+export const removeCartItem =
+  (productId) =>
+    apiRequest(
+      `/cart/remove/${productId}`,
+      {
+        method:
+          "DELETE",
+      }
+    );
 
-export const clearServerCart = () =>
-  apiRequest(
-    "/cart/clear",
-    {
-      method: "DELETE",
-    }
-  );
+export const clearServerCart =
+  () =>
+    apiRequest(
+      "/cart/clear",
+      {
+        method:
+          "DELETE",
+      }
+    );
 
 /* =====================================================
    SHOPS
@@ -550,43 +667,53 @@ export const createShop = (
   apiRequest(
     "/shops",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
-        JSON.stringify(shopData),
+        JSON.stringify(
+          shopData
+        ),
     }
   );
 
-export const getMyShop = () =>
-  apiRequest(
-    "/shops/my-shop"
-  );
+export const getMyShop =
+  () =>
+    apiRequest(
+      "/shops/my-shop"
+    );
 
-export const updateMyShop = (
-  shopData
-) =>
-  apiRequest(
-    "/shops/my-shop",
-    {
-      method: "PUT",
+export const updateMyShop =
+  (shopData) =>
+    apiRequest(
+      "/shops/my-shop",
+      {
+        method:
+          "PUT",
 
-      body:
-        JSON.stringify(shopData),
-    }
-  );
+        body:
+          JSON.stringify(
+            shopData
+          ),
+      }
+    );
 
 export const updateShop = (
   shopData
 ) =>
-  updateMyShop(shopData);
-
-export const toggleShopStatus = () =>
-  apiRequest(
-    "/shops/toggle-status",
-    {
-      method: "PATCH",
-    }
+  updateMyShop(
+    shopData
   );
+
+export const toggleShopStatus =
+  () =>
+    apiRequest(
+      "/shops/toggle-status",
+      {
+        method:
+          "PATCH",
+      }
+    );
 
 export const getShops = ({
   search = "",
@@ -596,23 +723,39 @@ export const getShops = ({
   const params =
     new URLSearchParams();
 
-  if (String(search).trim()) {
+  if (
+    String(
+      search
+    ).trim()
+  ) {
     params.set(
       "search",
-      String(search).trim()
+      String(
+        search
+      ).trim()
     );
   }
 
-  if (String(city).trim()) {
+  if (
+    String(
+      city
+    ).trim()
+  ) {
     params.set(
       "city",
-      String(city).trim()
+      String(
+        city
+      ).trim()
     );
   }
 
   params.set(
     "openOnly",
-    String(Boolean(openOnly))
+    String(
+      Boolean(
+        openOnly
+      )
+    )
   );
 
   const query =
@@ -620,22 +763,28 @@ export const getShops = ({
 
   return apiRequest(
     `/shops${
-      query ? `?${query}` : ""
+      query
+        ? `?${query}`
+        : ""
     }`
   );
 };
 
-export const getShop = (id) =>
-  apiRequest(
-    `/shops/${id}`
-  );
+export const getShop =
+  (id) =>
+    apiRequest(
+      `/shops/${id}`
+    );
 
 /* =====================================================
    ADDRESSES
 ===================================================== */
 
-export const getAddresses = () =>
-  apiRequest("/addresses");
+export const getAddresses =
+  () =>
+    apiRequest(
+      "/addresses"
+    );
 
 export const addAddress = (
   addressData
@@ -643,7 +792,8 @@ export const addAddress = (
   apiRequest(
     "/addresses",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
         JSON.stringify(
@@ -655,7 +805,9 @@ export const addAddress = (
 export const createAddress = (
   addressData
 ) =>
-  addAddress(addressData);
+  addAddress(
+    addressData
+  );
 
 export const updateAddress = (
   id,
@@ -664,7 +816,8 @@ export const updateAddress = (
   apiRequest(
     `/addresses/${id}`,
     {
-      method: "PUT",
+      method:
+        "PUT",
 
       body:
         JSON.stringify(
@@ -679,19 +832,20 @@ export const setDefaultAddress = (
   apiRequest(
     `/addresses/${id}/default`,
     {
-      method: "PATCH",
+      method:
+        "PATCH",
     }
   );
 
-export const deleteAddress = (
-  id
-) =>
-  apiRequest(
-    `/addresses/${id}`,
-    {
-      method: "DELETE",
-    }
-  );
+export const deleteAddress =
+  (id) =>
+    apiRequest(
+      `/addresses/${id}`,
+      {
+        method:
+          "DELETE",
+      }
+    );
 
 /* =====================================================
    ORDERS
@@ -703,22 +857,27 @@ export const createOrder = (
   apiRequest(
     "/orders",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
-        JSON.stringify(orderData),
+        JSON.stringify(
+          orderData
+        ),
     }
   );
 
-export const getMyOrders = () =>
-  apiRequest(
-    "/orders/my-orders"
-  );
+export const getMyOrders =
+  () =>
+    apiRequest(
+      "/orders/my-orders"
+    );
 
-export const getMyOrder = (id) =>
-  apiRequest(
-    `/orders/my-orders/${id}`
-  );
+export const getMyOrder =
+  (id) =>
+    apiRequest(
+      `/orders/my-orders/${id}`
+    );
 
 export const cancelMyOrder = (
   id,
@@ -727,11 +886,13 @@ export const cancelMyOrder = (
   apiRequest(
     `/orders/${id}/cancel`,
     {
-      method: "PATCH",
+      method:
+        "PATCH",
 
-      body: JSON.stringify({
-        reason,
-      }),
+      body:
+        JSON.stringify({
+          reason,
+        }),
     }
   );
 
@@ -756,12 +917,14 @@ export const updateOrderStatus = (
   apiRequest(
     `/orders/${orderId}/status`,
     {
-      method: "PATCH",
+      method:
+        "PATCH",
 
-      body: JSON.stringify({
-        orderStatus,
-        reason,
-      }),
+      body:
+        JSON.stringify({
+          orderStatus,
+          reason,
+        }),
     }
   );
 
@@ -775,7 +938,8 @@ export const createRazorpayOrder = (
   apiRequest(
     "/payments/create-order",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
         JSON.stringify(
@@ -790,7 +954,8 @@ export const verifyRazorpayPayment = (
   apiRequest(
     "/payments/verify",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
         JSON.stringify(
@@ -805,7 +970,8 @@ export const reportPaymentFailure = (
   apiRequest(
     "/payments/failed",
     {
-      method: "POST",
+      method:
+        "POST",
 
       body:
         JSON.stringify(
@@ -821,13 +987,16 @@ export const reportPaymentFailure = (
 export const getNotifications = (
   limit = 50
 ) => {
-  const safeLimit = Math.min(
-    Math.max(
-      Number(limit) || 50,
-      1
-    ),
-    100
-  );
+  const safeLimit =
+    Math.min(
+      Math.max(
+        Number(
+          limit
+        ) || 50,
+        1
+      ),
+      100
+    );
 
   return apiRequest(
     `/notifications?limit=${safeLimit}`
@@ -840,46 +1009,49 @@ export const getUnreadNotificationCount =
       "/notifications/unread-count"
     );
 
-export const markNotificationAsRead = (
-  id
-) =>
-  apiRequest(
-    `/notifications/${id}/read`,
-    {
-      method: "PATCH",
-    }
-  );
+export const markNotificationAsRead =
+  (id) =>
+    apiRequest(
+      `/notifications/${id}/read`,
+      {
+        method:
+          "PATCH",
+      }
+    );
 
-export const markNotificationRead = (
-  id
-) =>
-  markNotificationAsRead(id);
+export const markNotificationRead =
+  (id) =>
+    markNotificationAsRead(
+      id
+    );
 
 export const markAllNotificationsAsRead =
   () =>
     apiRequest(
       "/notifications/read-all",
       {
-        method: "PATCH",
+        method:
+          "PATCH",
       }
     );
 
-export const deleteNotification = (
-  id
-) =>
-  apiRequest(
-    `/notifications/${id}`,
-    {
-      method: "DELETE",
-    }
-  );
+export const deleteNotification =
+  (id) =>
+    apiRequest(
+      `/notifications/${id}`,
+      {
+        method:
+          "DELETE",
+      }
+    );
 
 export const clearReadNotifications =
   () =>
     apiRequest(
       "/notifications/read/clear",
       {
-        method: "DELETE",
+        method:
+          "DELETE",
       }
     );
 
@@ -887,33 +1059,139 @@ export const clearReadNotifications =
    PUSH NOTIFICATIONS
 ===================================================== */
 
-export const registerPushToken = (
-  token
-) =>
-  apiRequest(
-    "/notifications/push-token",
-    {
-      method: "POST",
+export const registerPushToken =
+  (token) =>
+    apiRequest(
+      "/notifications/push-token",
+      {
+        method:
+          "POST",
 
-      body: JSON.stringify({
-        token,
-      }),
-    }
-  );
+        body:
+          JSON.stringify({
+            token,
+          }),
+      }
+    );
 
-export const removePushToken = (
-  token
-) =>
-  apiRequest(
-    "/notifications/push-token",
-    {
-      method: "DELETE",
+export const removePushToken =
+  (token) =>
+    apiRequest(
+      "/notifications/push-token",
+      {
+        method:
+          "DELETE",
 
-      body: JSON.stringify({
-        token,
-      }),
-    }
-  );
+        body:
+          JSON.stringify({
+            token,
+          }),
+      }
+    );
+
+/* =====================================================
+   DELIVERY PARTNER
+===================================================== */
+
+export const getDeliveryPartnerProfile =
+  () =>
+    apiRequest(
+      "/delivery-partner/profile"
+    );
+
+export const updateDeliveryPartnerProfile =
+  (profileData) =>
+    apiRequest(
+      "/delivery-partner/profile",
+      {
+        method:
+          "PATCH",
+
+        body:
+          JSON.stringify(
+            profileData
+          ),
+      }
+    );
+
+export const updateDeliveryPartnerAvailability =
+  (available) =>
+    apiRequest(
+      "/delivery-partner/availability",
+      {
+        method:
+          "PATCH",
+
+        body:
+          JSON.stringify({
+            available,
+          }),
+      }
+    );
+
+export const getDeliveryPartnerDashboard =
+  () =>
+    apiRequest(
+      "/delivery-partner/dashboard"
+    );
+
+export const decideDeliveryPartnerOrder =
+  (
+    orderId,
+    decision
+  ) =>
+    apiRequest(
+      `/delivery-partner/orders/${orderId}/decision`,
+      {
+        method:
+          "PATCH",
+
+        body:
+          JSON.stringify({
+            decision,
+          }),
+      }
+    );
+
+export const completeDeliveryPartnerOrder =
+  (orderId) =>
+    apiRequest(
+      `/delivery-partner/orders/${orderId}/complete`,
+      {
+        method:
+          "PATCH",
+      }
+    );
+
+export const getDeliveryPartnerHistory =
+  () =>
+    apiRequest(
+      "/delivery-partner/history"
+    );
+
+export const getAvailableDeliveryPartners =
+  () =>
+    apiRequest(
+      "/delivery-partner/available"
+    );
+
+export const assignDeliveryPartner =
+  (
+    orderId,
+    deliveryPartnerId
+  ) =>
+    apiRequest(
+      `/delivery-partner/assign/${orderId}`,
+      {
+        method:
+          "PATCH",
+
+        body:
+          JSON.stringify({
+            deliveryPartnerId,
+          }),
+      }
+    );
 
 /* =====================================================
    DASHBOARD

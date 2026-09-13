@@ -38,9 +38,15 @@ import MyProducts from "./pages/MyProducts.jsx";
 import EditProduct from "./pages/EditProduct.jsx";
 import ShopSettings from "./pages/ShopSettings.jsx";
 
+import DeliveryPartnerDashboard from "./pages/DeliveryPartnerDashboard.jsx";
+
 import {
   CartProvider,
 } from "./context/CartContext.jsx";
+
+/* =====================================================
+   HELPERS
+===================================================== */
 
 function getUser() {
   try {
@@ -68,9 +74,9 @@ function getRole() {
     .toLowerCase();
 }
 
-/* ==========================================
-   SHOPKEEPER ONLY
-========================================== */
+/* =====================================================
+   SHOPKEEPER ROUTE
+===================================================== */
 
 function ShopkeeperRoute({
   children,
@@ -102,9 +108,9 @@ function ShopkeeperRoute({
   return children;
 }
 
-/* ==========================================
-   CUSTOMER AUTH REQUIRED
-========================================== */
+/* =====================================================
+   CUSTOMER AUTH ROUTE
+===================================================== */
 
 function CustomerAuthRoute({
   children,
@@ -133,12 +139,24 @@ function CustomerAuthRoute({
     );
   }
 
+  if (
+    getRole() ===
+    "delivery_partner"
+  ) {
+    return (
+      <Navigate
+        to="/delivery-dashboard"
+        replace
+      />
+    );
+  }
+
   return children;
 }
 
-/* ==========================================
+/* =====================================================
    PUBLIC CUSTOMER ROUTE
-========================================== */
+===================================================== */
 
 function PublicCustomerRoute({
   children,
@@ -158,8 +176,58 @@ function PublicCustomerRoute({
     );
   }
 
+  if (
+    role ===
+    "delivery_partner"
+  ) {
+    return (
+      <Navigate
+        to="/delivery-dashboard"
+        replace
+      />
+    );
+  }
+
   return children;
 }
+
+/* =====================================================
+   DELIVERY PARTNER ROUTE
+===================================================== */
+
+function DeliveryPartnerRoute({
+  children,
+}) {
+  const user =
+    getUser();
+
+  if (!user) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
+  }
+
+  if (
+    getRole() !==
+    "delivery_partner"
+  ) {
+    return (
+      <Navigate
+        to="/"
+        replace
+      />
+    );
+  }
+
+  return children;
+}
+
+/* =====================================================
+   APP
+===================================================== */
 
 createRoot(
   document.getElementById(
@@ -170,9 +238,8 @@ createRoot(
     <CartProvider>
       <BrowserRouter>
         <Routes>
-          {/* =============================
-              HOME
-          ============================== */}
+
+          {/* HOME */}
 
           <Route
             path="/"
@@ -183,9 +250,7 @@ createRoot(
             }
           />
 
-          {/* =============================
-              AUTH
-          ============================== */}
+          {/* AUTH */}
 
           <Route
             path="/login"
@@ -201,9 +266,7 @@ createRoot(
             }
           />
 
-          {/* =============================
-              PUBLIC CUSTOMER
-          ============================== */}
+          {/* PUBLIC CUSTOMER */}
 
           <Route
             path="/shop"
@@ -232,9 +295,7 @@ createRoot(
             }
           />
 
-          {/* =============================
-              CUSTOMER AUTH
-          ============================== */}
+          {/* CUSTOMER AUTH */}
 
           <Route
             path="/cart"
@@ -299,9 +360,7 @@ createRoot(
             }
           />
 
-          {/* =============================
-              SHOPKEEPER
-          ============================== */}
+          {/* SHOPKEEPER */}
 
           <Route
             path="/shopkeeper-dashboard"
@@ -366,9 +425,18 @@ createRoot(
             }
           />
 
-          {/* =============================
-              FALLBACK
-          ============================== */}
+          {/* DELIVERY PARTNER */}
+
+          <Route
+            path="/delivery-dashboard"
+            element={
+              <DeliveryPartnerRoute>
+                <DeliveryPartnerDashboard />
+              </DeliveryPartnerRoute>
+            }
+          />
+
+          {/* FALLBACK */}
 
           <Route
             path="*"
@@ -379,6 +447,7 @@ createRoot(
               />
             }
           />
+
         </Routes>
       </BrowserRouter>
     </CartProvider>

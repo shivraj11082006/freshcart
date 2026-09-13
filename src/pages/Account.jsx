@@ -6,6 +6,7 @@ import {
 import {
   FaUser,
   FaEnvelope,
+  FaPhone,
   FaShoppingBag,
   FaSignOutAlt,
   FaLeaf,
@@ -45,18 +46,12 @@ function Account() {
   const navigate =
     useNavigate();
 
-  /* =====================================================
-     USER
-  ===================================================== */
-
-  const [user, setUser] =
-    useState(() =>
-      getUser()
-    );
-
-  /* =====================================================
-     PROFILE
-  ===================================================== */
+  const [
+    user,
+    setUser,
+  ] = useState(
+    () => getUser()
+  );
 
   const [
     profileLoading,
@@ -84,11 +79,8 @@ function Account() {
   ] = useState({
     name: "",
     email: "",
+    phone: "",
   });
-
-  /* =====================================================
-     PASSWORD
-  ===================================================== */
 
   const [
     passwordSaving,
@@ -113,10 +105,6 @@ function Account() {
     newPassword: "",
     confirmPassword: "",
   });
-
-  /* =====================================================
-     ADDRESS
-  ===================================================== */
 
   const [
     addresses,
@@ -164,17 +152,23 @@ function Account() {
   });
 
   /* =====================================================
-     LOAD PROFILE
+     PROFILE
   ===================================================== */
 
   useEffect(() => {
     if (!user) {
-      navigate("/login", {
-        replace: true,
-      });
+      navigate(
+        "/login",
+        {
+          replace:
+            true,
+        }
+      );
 
       return;
     }
+
+    let active = true;
 
     const loadProfile =
       async () => {
@@ -188,7 +182,10 @@ function Account() {
           const data =
             await getProfile();
 
-          if (data?.user) {
+          if (
+            active &&
+            data?.user
+          ) {
             setUser(
               data.user
             );
@@ -201,6 +198,15 @@ function Account() {
               email:
                 data.user.email ||
                 "",
+
+              phone:
+                String(
+                  data.user.phone ||
+                    ""
+                ).replace(
+                  /^\+91/,
+                  ""
+                ),
             });
 
             localStorage.setItem(
@@ -210,23 +216,35 @@ function Account() {
               )
             );
           }
-        } catch (error) {
-          setProfileError(
-            error.message ||
-              "Unable to load profile."
-          );
+        } catch (
+          error
+        ) {
+          if (active) {
+            setProfileError(
+              error.message ||
+                "Unable to load profile."
+            );
+          }
         } finally {
-          setProfileLoading(
-            false
-          );
+          if (active) {
+            setProfileLoading(
+              false
+            );
+          }
         }
       };
 
     loadProfile();
-  }, [navigate]);
+
+    return () => {
+      active = false;
+    };
+  }, [
+    navigate,
+  ]);
 
   /* =====================================================
-     LOAD ADDRESSES
+     ADDRESSES
   ===================================================== */
 
   const loadAddresses =
@@ -246,7 +264,9 @@ function Account() {
             ? data.addresses
             : []
         );
-      } catch (error) {
+      } catch (
+        error
+      ) {
         setAddressMessage(
           error.message ||
             "Unable to load addresses."
@@ -262,10 +282,10 @@ function Account() {
     if (user) {
       loadAddresses();
     }
-  }, [user]);
+  }, []);
 
   /* =====================================================
-     PROFILE INPUT
+     PROFILE FORM
   ===================================================== */
 
   const handleProfileChange =
@@ -273,23 +293,25 @@ function Account() {
       const {
         name,
         value,
-      } = event.target;
+      } =
+        event.target;
 
       setProfileForm(
         (current) => ({
           ...current,
-
-          [name]: value,
+          [name]:
+            value,
         })
       );
+
+      setProfileMessage("");
+      setProfileError("");
     };
 
-  /* =====================================================
-     PROFILE SUBMIT
-  ===================================================== */
-
   const handleProfileSubmit =
-    async (event) => {
+    async (
+      event
+    ) => {
       event.preventDefault();
 
       try {
@@ -304,11 +326,34 @@ function Account() {
           profileForm.name.trim();
 
         if (
-          name.length < 2 ||
-          name.length > 80
+          name.length <
+            2 ||
+          name.length >
+            80
         ) {
           throw new Error(
             "Name must contain 2 to 80 characters."
+          );
+        }
+
+        const phone =
+          profileForm.phone
+            .replace(
+              /\D/g,
+              ""
+            )
+            .slice(
+              0,
+              10
+            );
+
+        if (
+          !/^[6-9]\d{9}$/.test(
+            phone
+          )
+        ) {
+          throw new Error(
+            "Please enter a valid 10-digit Indian mobile number."
           );
         }
 
@@ -317,6 +362,7 @@ function Account() {
             name,
             email:
               profileForm.email.trim(),
+            phone,
           });
 
         if (data?.user) {
@@ -332,6 +378,15 @@ function Account() {
             email:
               data.user.email ||
               "",
+
+            phone:
+              String(
+                data.user.phone ||
+                  ""
+              ).replace(
+                /^\+91/,
+                ""
+              ),
           });
 
           localStorage.setItem(
@@ -345,7 +400,9 @@ function Account() {
         setProfileMessage(
           "Profile updated successfully."
         );
-      } catch (error) {
+      } catch (
+        error
+      ) {
         setProfileError(
           error.message ||
             "Unable to update profile."
@@ -358,7 +415,7 @@ function Account() {
     };
 
   /* =====================================================
-     PASSWORD INPUT
+     PASSWORD
   ===================================================== */
 
   const handlePasswordChange =
@@ -366,23 +423,22 @@ function Account() {
       const {
         name,
         value,
-      } = event.target;
+      } =
+        event.target;
 
       setPasswordForm(
         (current) => ({
           ...current,
-
-          [name]: value,
+          [name]:
+            value,
         })
       );
     };
 
-  /* =====================================================
-     PASSWORD SUBMIT
-  ===================================================== */
-
   const handlePasswordSubmit =
-    async (event) => {
+    async (
+      event
+    ) => {
       event.preventDefault();
 
       setPasswordMessage("");
@@ -424,15 +480,22 @@ function Account() {
         });
 
         setPasswordForm({
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
+          currentPassword:
+            "",
+
+          newPassword:
+            "",
+
+          confirmPassword:
+            "",
         });
 
         setPasswordMessage(
           "Password changed successfully."
         );
-      } catch (error) {
+      } catch (
+        error
+      ) {
         setPasswordError(
           error.message ||
             "Unable to change password."
@@ -445,7 +508,7 @@ function Account() {
     };
 
   /* =====================================================
-     RESET ADDRESS FORM
+     ADDRESS FORM
   ===================================================== */
 
   const resetAddressForm =
@@ -456,7 +519,8 @@ function Account() {
 
         phone: "",
 
-        addressLine: "",
+        addressLine:
+          "",
 
         city: "",
 
@@ -464,13 +528,15 @@ function Account() {
 
         pincode: "",
 
-        landmark: "",
+        landmark:
+          "",
 
         addressType:
           "home",
 
         isDefault:
-          addresses.length === 0,
+          addresses.length ===
+          0,
       });
 
       setEditingAddressId(
@@ -482,10 +548,6 @@ function Account() {
       );
     };
 
-  /* =====================================================
-     ADDRESS INPUT
-  ===================================================== */
-
   const handleAddressChange =
     (event) => {
       const {
@@ -493,7 +555,8 @@ function Account() {
         value,
         type,
         checked,
-      } = event.target;
+      } =
+        event.target;
 
       setAddressForm(
         (current) => ({
@@ -508,10 +571,6 @@ function Account() {
       );
     };
 
-  /* =====================================================
-     ADD
-  ===================================================== */
-
   const handleAddAddress =
     () => {
       setAddressMessage("");
@@ -522,7 +581,8 @@ function Account() {
 
         phone: "",
 
-        addressLine: "",
+        addressLine:
+          "",
 
         city: "",
 
@@ -530,13 +590,15 @@ function Account() {
 
         pincode: "",
 
-        landmark: "",
+        landmark:
+          "",
 
         addressType:
           "home",
 
         isDefault:
-          addresses.length === 0,
+          addresses.length ===
+          0,
       });
 
       setEditingAddressId(
@@ -547,10 +609,6 @@ function Account() {
         true
       );
     };
-
-  /* =====================================================
-     EDIT
-  ===================================================== */
 
   const handleEditAddress =
     (address) => {
@@ -604,17 +662,27 @@ function Account() {
       );
     };
 
-  /* =====================================================
-     SAVE ADDRESS
-  ===================================================== */
-
   const handleAddressSubmit =
-    async (event) => {
+    async (
+      event
+    ) => {
       event.preventDefault();
 
+      const phone =
+        addressForm.phone.replace(
+          /\D/g,
+          ""
+        );
+
+      const pincode =
+        addressForm.pincode.replace(
+          /\D/g,
+          ""
+        );
+
       if (
-        !/^[0-9]{10}$/.test(
-          addressForm.phone.trim()
+        !/^[6-9]\d{9}$/.test(
+          phone
         )
       ) {
         setAddressMessage(
@@ -625,8 +693,8 @@ function Account() {
       }
 
       if (
-        !/^[0-9]{6}$/.test(
-          addressForm.pincode.trim()
+        !/^\d{6}$/.test(
+          pincode
         )
       ) {
         setAddressMessage(
@@ -649,8 +717,7 @@ function Account() {
           fullName:
             addressForm.fullName.trim(),
 
-          phone:
-            addressForm.phone.trim(),
+          phone,
 
           addressLine:
             addressForm.addressLine.trim(),
@@ -661,8 +728,7 @@ function Account() {
           state:
             addressForm.state.trim(),
 
-          pincode:
-            addressForm.pincode.trim(),
+          pincode,
 
           landmark:
             addressForm.landmark.trim(),
@@ -690,7 +756,9 @@ function Account() {
         );
 
         resetAddressForm();
-      } catch (error) {
+      } catch (
+        error
+      ) {
         setAddressMessage(
           error.message ||
             "Unable to save address."
@@ -702,12 +770,10 @@ function Account() {
       }
     };
 
-  /* =====================================================
-     DEFAULT ADDRESS
-  ===================================================== */
-
   const handleSetDefault =
-    async (id) => {
+    async (
+      id
+    ) => {
       try {
         setAddressMessage("");
 
@@ -720,7 +786,9 @@ function Account() {
         setAddressMessage(
           "Default address updated."
         );
-      } catch (error) {
+      } catch (
+        error
+      ) {
         setAddressMessage(
           error.message ||
             "Unable to update default address."
@@ -728,12 +796,10 @@ function Account() {
       }
     };
 
-  /* =====================================================
-     DELETE ADDRESS
-  ===================================================== */
-
   const handleDeleteAddress =
-    async (id) => {
+    async (
+      id
+    ) => {
       if (
         !window.confirm(
           "Delete this address?"
@@ -754,7 +820,9 @@ function Account() {
         setAddressMessage(
           "Address deleted successfully."
         );
-      } catch (error) {
+      } catch (
+        error
+      ) {
         setAddressMessage(
           error.message ||
             "Unable to delete address."
@@ -770,16 +838,16 @@ function Account() {
     () => {
       clearAuthData();
 
-      navigate("/", {
-        replace: true,
-      });
+      navigate(
+        "/",
+        {
+          replace:
+            true,
+        }
+      );
 
       window.location.reload();
     };
-
-  /* =====================================================
-     ROLE
-  ===================================================== */
 
   const isShopkeeper =
     String(
@@ -790,28 +858,30 @@ function Account() {
   const roleLabel =
     isShopkeeper
       ? "Shopkeeper"
-      : "Customer";
-
-  /* =====================================================
-     NO USER
-  ===================================================== */
+      : String(
+          user?.role ||
+            "Customer"
+        )
+          .replace(
+            "_",
+            " "
+          )
+          .replace(
+            /^\w/,
+            (letter) =>
+              letter.toUpperCase()
+          );
 
   if (!user) {
     return null;
   }
 
-  /* =====================================================
-     PAGE
-  ===================================================== */
-
   return (
     <div className="professional-account-page">
-      {/* ==========================================
-          HEADER
-      ========================================== */}
 
       <header className="simple-market-header">
         <div className="simple-market-inner">
+
           <Link
             to="/"
             className="professional-logo"
@@ -832,20 +902,22 @@ function Account() {
           >
             Continue Shopping
           </Link>
+
         </div>
       </header>
 
       <main className="professional-account-container">
-        {/* ========================================
-            WELCOME
-        ======================================== */}
+
+        {/* WELCOME */}
 
         <div className="account-welcome">
+
           <div className="account-avatar-large">
             <FaUser />
           </div>
 
           <div>
+
             <span>
               Welcome back
             </span>
@@ -858,20 +930,19 @@ function Account() {
               Manage your FreshCart
               account and orders.
             </p>
+
           </div>
+
         </div>
 
-        {/* ========================================
-            MAIN GRID
-        ======================================== */}
+        {/* PROFILE + QUICK ACCESS */}
 
         <div className="professional-account-grid">
-          {/* ======================================
-              PROFILE
-          ====================================== */}
 
           <section className="account-profile-card">
+
             <div className="account-card-heading">
+
               <div>
                 <span>
                   PROFILE
@@ -883,12 +954,12 @@ function Account() {
               </div>
 
               <FaUser />
+
             </div>
 
             {profileLoading ? (
               <div className="account-loading">
                 <FaSpinner className="spinner" />
-
                 Loading profile...
               </div>
             ) : (
@@ -898,10 +969,10 @@ function Account() {
                 }
                 className="account-profile-form"
               >
+
                 <div className="account-form-group">
                   <label>
                     <FaUser />
-
                     Full Name
                   </label>
 
@@ -921,7 +992,6 @@ function Account() {
                 <div className="account-form-group">
                   <label>
                     <FaEnvelope />
-
                     Email
                   </label>
 
@@ -943,8 +1013,33 @@ function Account() {
 
                 <div className="account-form-group">
                   <label>
-                    <FaShieldAlt />
+                    <FaPhone />
+                    Mobile Number
+                  </label>
 
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={
+                      profileForm.phone
+                    }
+                    onChange={
+                      handleProfileChange
+                    }
+                    inputMode="numeric"
+                    maxLength={10}
+                    placeholder="Enter 10-digit mobile number"
+                  />
+
+                  <small>
+                    Login OTPs are sent to
+                    this mobile number.
+                  </small>
+                </div>
+
+                <div className="account-form-group">
+                  <label>
+                    <FaShieldAlt />
                     Account Type
                   </label>
 
@@ -967,7 +1062,6 @@ function Account() {
                   {profileSaving ? (
                     <>
                       <FaSpinner className="spinner" />
-
                       Saving...
                     </>
                   ) : (
@@ -978,7 +1072,6 @@ function Account() {
                 {profileMessage && (
                   <p className="account-success-message">
                     <FaCheckCircle />
-
                     {profileMessage}
                   </p>
                 )}
@@ -988,16 +1081,16 @@ function Account() {
                     {profileError}
                   </p>
                 )}
+
               </form>
             )}
+
           </section>
 
-          {/* ======================================
-              QUICK ACCESS
-          ====================================== */}
-
           <section className="account-actions-card">
+
             <div className="account-card-heading">
+
               <div>
                 <span>
                   QUICK ACCESS
@@ -1007,6 +1100,7 @@ function Account() {
                   My Account
                 </h2>
               </div>
+
             </div>
 
             <Link
@@ -1095,6 +1189,30 @@ function Account() {
               </Link>
             )}
 
+            {user.role ===
+              "delivery_partner" && (
+              <Link
+                to="/delivery-dashboard"
+                className="account-action-item"
+              >
+                <div className="account-action-icon">
+                  🚚
+                </div>
+
+                <div>
+                  <strong>
+                    Delivery Dashboard
+                  </strong>
+
+                  <span>
+                    Manage deliveries and earnings
+                  </span>
+                </div>
+
+                <FaChevronRight />
+              </Link>
+            )}
+
             <button
               type="button"
               className="account-action-item account-logout-action"
@@ -1118,15 +1236,17 @@ function Account() {
 
               <FaChevronRight />
             </button>
+
           </section>
+
         </div>
 
-        {/* ========================================
-            SECURITY
-        ======================================== */}
+        {/* PASSWORD */}
 
         <section className="account-security-section">
+
           <div className="account-card-heading">
+
             <div>
               <span>
                 SECURITY
@@ -1138,6 +1258,7 @@ function Account() {
             </div>
 
             <FaLock />
+
           </div>
 
           <form
@@ -1146,6 +1267,7 @@ function Account() {
               handlePasswordSubmit
             }
           >
+
             <div className="account-form-group">
               <label>
                 Current Password
@@ -1217,13 +1339,11 @@ function Account() {
               {passwordSaving ? (
                 <>
                   <FaSpinner className="spinner" />
-
                   Updating...
                 </>
               ) : (
                 <>
                   <FaLock />
-
                   Change Password
                 </>
               )}
@@ -1232,7 +1352,6 @@ function Account() {
             {passwordMessage && (
               <p className="account-success-message">
                 <FaCheckCircle />
-
                 {passwordMessage}
               </p>
             )}
@@ -1242,15 +1361,16 @@ function Account() {
                 {passwordError}
               </p>
             )}
+
           </form>
         </section>
 
-        {/* ========================================
-            ADDRESSES
-        ======================================== */}
+        {/* ADDRESSES */}
 
         <section className="account-address-section">
+
           <div className="account-card-heading">
+
             <div>
               <span>
                 DELIVERY
@@ -1262,12 +1382,12 @@ function Account() {
             </div>
 
             <FaMapMarkerAlt />
+
           </div>
 
           {addressMessage && (
             <p className="account-success-message">
               <FaCheckCircle />
-
               {addressMessage}
             </p>
           )}
@@ -1275,11 +1395,11 @@ function Account() {
           {addressLoading ? (
             <div className="account-loading">
               <FaSpinner className="spinner" />
-
               Loading addresses...
             </div>
           ) : (
             <div className="account-address-grid">
+
               {addresses.map(
                 (
                   address
@@ -1294,7 +1414,9 @@ function Account() {
                       address._id
                     }
                   >
+
                     <div>
+
                       <span className="account-address-type">
                         {
                           address.addressType
@@ -1306,6 +1428,7 @@ function Account() {
                           Default
                         </span>
                       )}
+
                     </div>
 
                     <h3>
@@ -1334,6 +1457,7 @@ function Account() {
                     </small>
 
                     <div className="account-address-actions">
+
                       <button
                         type="button"
                         className="professional-outline-btn"
@@ -1344,7 +1468,6 @@ function Account() {
                         }
                       >
                         <FaEdit />
-
                         Edit
                       </button>
 
@@ -1373,7 +1496,9 @@ function Account() {
                       >
                         <FaTrash />
                       </button>
+
                     </div>
+
                   </article>
                 )
               )}
@@ -1395,12 +1520,9 @@ function Account() {
                   Save a new delivery address
                 </span>
               </button>
+
             </div>
           )}
-
-          {/* ======================================
-              ADDRESS FORM
-          ====================================== */}
 
           {showAddressForm && (
             <form
@@ -1409,7 +1531,9 @@ function Account() {
                 handleAddressSubmit
               }
             >
+
               <div className="account-form-grid">
+
                 <input
                   name="fullName"
                   placeholder="Full name"
@@ -1518,9 +1642,11 @@ function Account() {
                     Other
                   </option>
                 </select>
+
               </div>
 
               <label className="checkbox-row">
+
                 <input
                   type="checkbox"
                   name="isDefault"
@@ -1534,9 +1660,11 @@ function Account() {
 
                 Make this my default
                 address
+
               </label>
 
               <div className="account-address-form-actions">
+
                 <button
                   type="submit"
                   className="professional-primary-btn"
@@ -1547,7 +1675,6 @@ function Account() {
                   {addressSaving ? (
                     <>
                       <FaSpinner className="spinner" />
-
                       Saving...
                     </>
                   ) : editingAddressId ? (
@@ -1569,10 +1696,14 @@ function Account() {
                 >
                   Cancel
                 </button>
+
               </div>
+
             </form>
           )}
+
         </section>
+
       </main>
     </div>
   );

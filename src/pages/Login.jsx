@@ -17,6 +17,7 @@ import {
 
 import {
   Link,
+  useLocation,
   useNavigate,
 } from "react-router-dom";
 
@@ -36,17 +37,27 @@ function Login() {
   const navigate =
     useNavigate();
 
+  const location =
+    useLocation();
+
   const [
     mode,
     setMode,
-  ] = useState("login");
+  ] = useState(
+    "login"
+  );
 
   const [
     formData,
     setFormData,
   ] = useState({
-    email: "",
-    password: "",
+    email:
+      location.state
+        ?.email ||
+      "",
+
+    password:
+      "",
   });
 
   const [
@@ -67,53 +78,128 @@ function Login() {
   const [
     showPassword,
     setShowPassword,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
 
   const [
     loading,
     setLoading,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
 
   const [
     success,
     setSuccess,
-  ] = useState("");
+  ] = useState(
+    ""
+  );
 
   const [
     error,
     setError,
-  ] = useState("");
+  ] = useState(
+    ""
+  );
 
   const [
     resendCooldown,
     setResendCooldown,
-  ] = useState(0);
+  ] = useState(
+    0
+  );
 
   /* =====================================================
      COOLDOWN
   ===================================================== */
 
- useEffect(() => {
-  if (resendCooldown <= 0) {
-    return undefined;
-  }
+  useEffect(() => {
+    if (
+      resendCooldown <=
+      0
+    ) {
+      return undefined;
+    }
 
-  const timer =
-    window.setInterval(() => {
-      setResendCooldown(
-        (value) =>
-          Math.max(
-            0,
-            value - 1
-          )
+    const timer =
+      window.setInterval(
+        () => {
+          setResendCooldown(
+            (
+              current
+            ) =>
+              Math.max(
+                0,
+                current -
+                  1
+              )
+          );
+        },
+        1000
       );
-    }, 1000);
 
-  return () =>
-    window.clearInterval(
-      timer
-    );
-}, [resendCooldown]);
+    return () =>
+      window.clearInterval(
+        timer
+      );
+  }, [
+    resendCooldown,
+  ]);
+
+  /* =====================================================
+     REDIRECT
+  ===================================================== */
+
+  const redirectUser =
+    (user) => {
+      const role =
+        String(
+          user?.role ||
+            ""
+        )
+          .trim()
+          .toLowerCase();
+
+      if (
+        role ===
+        "delivery_partner"
+      ) {
+        navigate(
+          "/delivery-dashboard",
+          {
+            replace:
+              true,
+          }
+        );
+
+        return;
+      }
+
+      if (
+        role ===
+        "shopkeeper"
+      ) {
+        navigate(
+          "/shopkeeper-dashboard",
+          {
+            replace:
+              true,
+          }
+        );
+
+        return;
+      }
+
+      navigate(
+        "/",
+        {
+          replace:
+            true,
+        }
+      );
+    };
+
   /* =====================================================
      INPUT
   ===================================================== */
@@ -127,8 +213,11 @@ function Login() {
         event.target;
 
       setFormData(
-        (current) => ({
+        (
+          current
+        ) => ({
           ...current,
+
           [name]:
             value,
         })
@@ -136,45 +225,6 @@ function Login() {
 
       setError("");
       setSuccess("");
-    };
-
-  /* =====================================================
-     REDIRECT
-  ===================================================== */
-
-  const redirectUser =
-    (user) => {
-      const role =
-        String(
-          user?.role ||
-            ""
-        ).toLowerCase();
-
-      window.setTimeout(
-        () => {
-          if (
-            role ===
-            "shopkeeper"
-          ) {
-            navigate(
-              "/shopkeeper-dashboard",
-              {
-                replace:
-                  true,
-              }
-            );
-          } else {
-            navigate(
-              "/",
-              {
-                replace:
-                  true,
-              }
-            );
-          }
-        },
-        400
-      );
     };
 
   /* =====================================================
@@ -187,6 +237,10 @@ function Login() {
     ) => {
       event.preventDefault();
 
+      setLoading(
+        true
+      );
+
       setError("");
       setSuccess("");
 
@@ -198,25 +252,23 @@ function Login() {
       const password =
         formData.password;
 
-      if (
-        !email ||
-        !password
-      ) {
-        setError(
-          "Email and password are required."
-        );
-
-        return;
-      }
-
       try {
-        setLoading(true);
-
         const data =
           await loginUser({
             email,
             password,
           });
+
+        /*
+          Production flow:
+
+          Correct password
+              ↓
+          Backend sends OTP
+              ↓
+          Backend returns 403
+          requiresVerification=true
+        */
 
         if (
           data?.token &&
@@ -228,7 +280,7 @@ function Login() {
           );
 
           setSuccess(
-            "Login successful!"
+            "Login successful."
           );
 
           redirectUser(
@@ -237,40 +289,49 @@ function Login() {
 
           return;
         }
+
+        throw new Error(
+          "Unexpected login response."
+        );
       } catch (
-        error
+        apiError
       ) {
         if (
-          error.status ===
+          apiError.status ===
             403 &&
-          error.response
+          apiError.response
             ?.requiresVerification
         ) {
           setMode(
             "verify"
           );
 
+          setOtp("");
+
           setResendCooldown(
             Number(
-              error.response
+              apiError.response
                 ?.resendAfterSeconds ||
                 60
             )
           );
 
           setSuccess(
-            "OTP sent to your email. Please check your inbox."
+            apiError.message ||
+              "OTP sent to your email. Please check your inbox."
           );
 
           return;
         }
 
         setError(
-          error.message ||
+          apiError.message ||
             "Login failed."
         );
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     };
 
@@ -290,35 +351,41 @@ function Login() {
         )
       ) {
         setError(
-          "Enter the 6-digit OTP."
+          "Please enter the 6-digit OTP."
         );
 
         return;
       }
 
       try {
-        setLoading(true);
+        setLoading(
+          true
+        );
+
         setError("");
+        setSuccess("");
 
         const data =
-          await verifyLoginOtp({
-            email:
-              formData.email
-                .trim()
-                .toLowerCase(),
+          await verifyLoginOtp(
+            {
+              email:
+                formData.email
+                  .trim()
+                  .toLowerCase(),
 
-            password:
-              formData.password,
+              password:
+                formData.password,
 
-            otp,
-          });
+              otp,
+            }
+          );
 
         if (
           !data?.token ||
           !data?.user
         ) {
           throw new Error(
-            "Verification failed."
+            "OTP verification failed."
           );
         }
 
@@ -328,21 +395,23 @@ function Login() {
         );
 
         setSuccess(
-          "Account verified successfully!"
+          "OTP verified. Login successful."
         );
 
         redirectUser(
           data.user
         );
       } catch (
-        error
+        apiError
       ) {
         setError(
-          error.message ||
-            "Invalid OTP."
+          apiError.message ||
+            "OTP verification failed."
         );
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     };
 
@@ -360,8 +429,12 @@ function Login() {
       }
 
       try {
-        setLoading(true);
+        setLoading(
+          true
+        );
+
         setError("");
+        setSuccess("");
 
         const data =
           await resendOtp(
@@ -378,17 +451,20 @@ function Login() {
         );
 
         setSuccess(
-          "New OTP sent to your email. Please check your inbox."
+          data?.message ||
+            "A new OTP has been sent to your email."
         );
       } catch (
-        error
+        apiError
       ) {
         setError(
-          error.message ||
+          apiError.message ||
             "Unable to resend OTP."
         );
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     };
 
@@ -409,20 +485,26 @@ function Login() {
 
       if (!email) {
         setError(
-          "Enter your email address first."
+          "Please enter your email address."
         );
 
         return;
       }
 
       try {
-        setLoading(true);
+        setLoading(
+          true
+        );
+
         setError("");
+        setSuccess("");
 
         const data =
           await forgotPassword(
             email
           );
+
+        setOtp("");
 
         setMode(
           "reset"
@@ -436,17 +518,20 @@ function Login() {
         );
 
         setSuccess(
-          "Password reset OTP sent to your email. Please check your inbox."
+          data?.message ||
+            "Password reset OTP sent to your email."
         );
       } catch (
-        error
+        apiError
       ) {
         setError(
-          error.message ||
+          apiError.message ||
             "Unable to start password reset."
         );
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     };
 
@@ -466,7 +551,7 @@ function Login() {
         )
       ) {
         setError(
-          "Enter the 6-digit reset OTP."
+          "Please enter the 6-digit reset OTP."
         );
 
         return;
@@ -495,8 +580,12 @@ function Login() {
       }
 
       try {
-        setLoading(true);
+        setLoading(
+          true
+        );
+
         setError("");
+        setSuccess("");
 
         await resetPassword({
           email:
@@ -509,26 +598,34 @@ function Login() {
           newPassword,
         });
 
+        setOtp("");
+
+        setNewPassword(
+          ""
+        );
+
+        setConfirmPassword(
+          ""
+        );
+
         setMode(
           "login"
         );
 
-        setOtp("");
-        setNewPassword("");
-        setConfirmPassword("");
-
         setSuccess(
-          "Password reset successfully. You can now login with your new password."
+          "Password reset successfully. You can now login."
         );
       } catch (
-        error
+        apiError
       ) {
         setError(
-          error.message ||
+          apiError.message ||
             "Unable to reset password."
         );
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     };
 
@@ -546,8 +643,12 @@ function Login() {
       }
 
       try {
-        setLoading(true);
+        setLoading(
+          true
+        );
+
         setError("");
+        setSuccess("");
 
         const data =
           await resendResetOtp(
@@ -564,35 +665,66 @@ function Login() {
         );
 
         setSuccess(
-          "New reset OTP sent to your email. Please check your inbox."
+          data?.message ||
+            "A new reset OTP has been sent to your email."
         );
       } catch (
-        error
+        apiError
       ) {
         setError(
-          error.message ||
+          apiError.message ||
             "Unable to resend reset OTP."
         );
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     };
 
   /* =====================================================
-     PAGE
+     MESSAGES
   ===================================================== */
+
+  const Messages =
+    () => (
+      <>
+        {success && (
+          <div className="auth-success">
+            <FaCheckCircle />
+
+            <span>
+              {success}
+            </span>
+          </div>
+        )}
+
+        {error && (
+          <div className="auth-error">
+            <FaExclamationCircle />
+
+            <span>
+              {error}
+            </span>
+          </div>
+        )}
+      </>
+    );
 
   return (
     <div className="auth-page">
+
       <Link
         to="/"
         className="auth-back"
       >
         <FaArrowLeft />
+
         Back to Home
       </Link>
 
       <div className="auth-card">
+
         <Link
           to="/"
           className="auth-logo"
@@ -615,6 +747,7 @@ function Login() {
           "login" && (
           <>
             <div className="auth-header">
+
               <span className="auth-welcome-badge">
                 WELCOME BACK
               </span>
@@ -624,24 +757,14 @@ function Login() {
               </h1>
 
               <p>
-                Fresh groceries are
-                just a few clicks away.
+                Enter your credentials.
+                We'll send a verification
+                OTP to your email.
               </p>
+
             </div>
 
-            {success && (
-              <div className="auth-success">
-                <FaCheckCircle />
-                {success}
-              </div>
-            )}
-
-            {error && (
-              <div className="auth-error">
-                <FaExclamationCircle />
-                {error}
-              </div>
-            )}
+            <Messages />
 
             <form
               onSubmit={
@@ -649,12 +772,15 @@ function Login() {
               }
               className="auth-form"
             >
+
               <div className="form-group">
+
                 <label>
                   Email
                 </label>
 
                 <div className="input-wrapper">
+
                   <FaEnvelope />
 
                   <input
@@ -670,15 +796,19 @@ function Login() {
                     autoComplete="email"
                     required
                   />
+
                 </div>
+
               </div>
 
               <div className="form-group">
+
                 <label>
                   Password
                 </label>
 
                 <div className="input-wrapper">
+
                   <FaLock />
 
                   <input
@@ -705,9 +835,9 @@ function Login() {
                     onClick={() =>
                       setShowPassword(
                         (
-                          value
+                          current
                         ) =>
-                          !value
+                          !current
                       )
                     }
                   >
@@ -717,40 +847,51 @@ function Login() {
                       <FaEye />
                     )}
                   </button>
+
                 </div>
+
               </div>
 
               <div
                 style={{
                   textAlign:
                     "right",
+
                   marginBottom:
                     "12px",
                 }}
               >
+
                 <button
                   type="button"
-                  style={{
-                    border:
-                      "none",
-                    background:
-                      "none",
-                    padding: 0,
-                    cursor:
-                      "pointer",
-                    color:
-                      "#16a34a",
-                    fontWeight:
-                      600,
-                  }}
                   onClick={() =>
                     setMode(
                       "forgot"
                     )
                   }
+                  style={{
+                    border:
+                      "none",
+
+                    background:
+                      "none",
+
+                    padding:
+                      0,
+
+                    cursor:
+                      "pointer",
+
+                    color:
+                      "#16a34a",
+
+                    fontWeight:
+                      600,
+                  }}
                 >
                   Forgot Password?
                 </button>
+
               </div>
 
               <button
@@ -763,67 +904,61 @@ function Login() {
                 {loading ? (
                   <>
                     <FaSpinner className="fa-spin" />
-                    Checking...
+
+                    Sending OTP...
                   </>
                 ) : (
                   "Login"
                 )}
               </button>
+
             </form>
 
             <div className="auth-footer">
+
               <span>
                 Don't have an account?
               </span>
 
-              <Link to="/register">
+              <Link
+                to="/register"
+              >
                 Create Account
               </Link>
+
             </div>
           </>
         )}
 
         {/* =================================================
-            VERIFY OTP
+            OTP
         ================================================= */}
 
         {mode ===
           "verify" && (
           <>
             <div className="auth-header">
+
               <span className="auth-welcome-badge">
-                VERIFY ACCOUNT
+                EMAIL VERIFICATION
               </span>
 
               <h1>
-                Enter OTP
+                Enter your OTP
               </h1>
 
               <p>
-                Enter the 6-digit code
-                sent to:
+                We sent a 6-digit
+                verification code to
+                <strong>
+                  {" "}
+                  {formData.email}
+                </strong>
               </p>
 
-              <strong>
-                {
-                  formData.email
-                }
-              </strong>
             </div>
 
-            {success && (
-              <div className="auth-success">
-                <FaCheckCircle />
-                {success}
-              </div>
-            )}
-
-            {error && (
-              <div className="auth-error">
-                <FaExclamationCircle />
-                {error}
-              </div>
-            )}
+            <Messages />
 
             <form
               onSubmit={
@@ -831,12 +966,15 @@ function Login() {
               }
               className="auth-form"
             >
+
               <div className="form-group">
+
                 <label>
                   Verification OTP
                 </label>
 
                 <div className="input-wrapper">
+
                   <FaKey />
 
                   <input
@@ -860,10 +998,12 @@ function Login() {
                     }
                     maxLength={6}
                     autoComplete="one-time-code"
-                    placeholder="6-digit OTP"
+                    placeholder="Enter 6-digit OTP"
                     required
                   />
+
                 </div>
+
               </div>
 
               <button
@@ -881,9 +1021,23 @@ function Login() {
                   "Verify & Login"
                 )}
               </button>
+
             </form>
 
-            <div className="auth-footer">
+            <div
+              className="auth-footer"
+              style={{
+                display:
+                  "flex",
+
+                justifyContent:
+                  "space-between",
+
+                gap:
+                  "10px",
+              }}
+            >
+
               <button
                 type="button"
                 disabled={
@@ -894,6 +1048,22 @@ function Login() {
                 onClick={
                   handleResend
                 }
+                style={{
+                  border:
+                    "none",
+
+                  background:
+                    "transparent",
+
+                  color:
+                    "#16a34a",
+
+                  fontWeight:
+                    700,
+
+                  cursor:
+                    "pointer",
+                }}
               >
                 {resendCooldown >
                 0
@@ -908,9 +1078,23 @@ function Login() {
                     "login"
                   )
                 }
+                style={{
+                  border:
+                    "none",
+
+                  background:
+                    "transparent",
+
+                  color:
+                    "#64748b",
+
+                  cursor:
+                    "pointer",
+                }}
               >
                 Back
               </button>
+
             </div>
           </>
         )}
@@ -923,6 +1107,7 @@ function Login() {
           "forgot" && (
           <>
             <div className="auth-header">
+
               <span className="auth-welcome-badge">
                 ACCOUNT RECOVERY
               </span>
@@ -932,25 +1117,14 @@ function Login() {
               </h1>
 
               <p>
-                Enter your FreshCart
-                email and we'll send
-                you a reset OTP.
+                Enter your email and
+                we'll send you a reset
+                OTP.
               </p>
+
             </div>
 
-            {success && (
-              <div className="auth-success">
-                <FaCheckCircle />
-                {success}
-              </div>
-            )}
-
-            {error && (
-              <div className="auth-error">
-                <FaExclamationCircle />
-                {error}
-              </div>
-            )}
+            <Messages />
 
             <form
               onSubmit={
@@ -958,28 +1132,45 @@ function Login() {
               }
               className="auth-form"
             >
+
               <div className="form-group">
+
                 <label>
                   Email
                 </label>
 
                 <div className="input-wrapper">
+
                   <FaEnvelope />
 
                   <input
                     type="email"
-                    name="email"
                     value={
                       formData.email
                     }
-                    onChange={
-                      handleChange
+                    onChange={(
+                      event
+                    ) =>
+                      setFormData(
+                        (
+                          current
+                        ) => ({
+                          ...current,
+
+                          email:
+                            event
+                              .target
+                              .value,
+                        })
+                      )
                     }
                     placeholder="Enter your email"
                     autoComplete="email"
                     required
                   />
+
                 </div>
+
               </div>
 
               <button
@@ -995,9 +1186,11 @@ function Login() {
                   "Send Reset OTP"
                 )}
               </button>
+
             </form>
 
             <div className="auth-footer">
+
               <button
                 type="button"
                 onClick={() =>
@@ -1005,9 +1198,26 @@ function Login() {
                     "login"
                   )
                 }
+                style={{
+                  border:
+                    "none",
+
+                  background:
+                    "transparent",
+
+                  color:
+                    "#16a34a",
+
+                  fontWeight:
+                    700,
+
+                  cursor:
+                    "pointer",
+                }}
               >
                 ← Back to Login
               </button>
+
             </div>
           </>
         )}
@@ -1020,6 +1230,7 @@ function Login() {
           "reset" && (
           <>
             <div className="auth-header">
+
               <span className="auth-welcome-badge">
                 RESET PASSWORD
               </span>
@@ -1029,24 +1240,13 @@ function Login() {
               </h1>
 
               <p>
-                Enter the OTP and your
-                new password.
+                Enter the reset OTP
+                sent to your email.
               </p>
+
             </div>
 
-            {success && (
-              <div className="auth-success">
-                <FaCheckCircle />
-                {success}
-              </div>
-            )}
-
-            {error && (
-              <div className="auth-error">
-                <FaExclamationCircle />
-                {error}
-              </div>
-            )}
+            <Messages />
 
             <form
               onSubmit={
@@ -1054,12 +1254,15 @@ function Login() {
               }
               className="auth-form"
             >
+
               <div className="form-group">
+
                 <label>
                   Reset OTP
                 </label>
 
                 <div className="input-wrapper">
+
                   <FaKey />
 
                   <input
@@ -1085,15 +1288,19 @@ function Login() {
                     placeholder="6-digit OTP"
                     required
                   />
+
                 </div>
+
               </div>
 
               <div className="form-group">
+
                 <label>
                   New Password
                 </label>
 
                 <div className="input-wrapper">
+
                   <FaLock />
 
                   <input
@@ -1117,15 +1324,38 @@ function Login() {
                     placeholder="New password"
                     required
                   />
+
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() =>
+                      setShowPassword(
+                        (
+                          current
+                        ) =>
+                          !current
+                      )
+                    }
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash />
+                    ) : (
+                      <FaEye />
+                    )}
+                  </button>
+
                 </div>
+
               </div>
 
               <div className="form-group">
+
                 <label>
                   Confirm Password
                 </label>
 
                 <div className="input-wrapper">
+
                   <FaLock />
 
                   <input
@@ -1142,10 +1372,12 @@ function Login() {
                       )
                     }
                     autoComplete="new-password"
-                    placeholder="Confirm new password"
+                    placeholder="Confirm password"
                     required
                   />
+
                 </div>
+
               </div>
 
               <button
@@ -1161,9 +1393,23 @@ function Login() {
                   "Reset Password"
                 )}
               </button>
+
             </form>
 
-            <div className="auth-footer">
+            <div
+              className="auth-footer"
+              style={{
+                display:
+                  "flex",
+
+                justifyContent:
+                  "space-between",
+
+                gap:
+                  "10px",
+              }}
+            >
+
               <button
                 type="button"
                 disabled={
@@ -1174,11 +1420,27 @@ function Login() {
                 onClick={
                   handleResendReset
                 }
+                style={{
+                  border:
+                    "none",
+
+                  background:
+                    "transparent",
+
+                  color:
+                    "#16a34a",
+
+                  fontWeight:
+                    700,
+
+                  cursor:
+                    "pointer",
+                }}
               >
                 {resendCooldown >
                 0
                   ? `Resend in ${resendCooldown}s`
-                  : "Resend Reset OTP"}
+                  : "Resend OTP"}
               </button>
 
               <button
@@ -1188,12 +1450,27 @@ function Login() {
                     "login"
                   )
                 }
+                style={{
+                  border:
+                    "none",
+
+                  background:
+                    "transparent",
+
+                  color:
+                    "#64748b",
+
+                  cursor:
+                    "pointer",
+                }}
               >
                 Back to Login
               </button>
+
             </div>
           </>
         )}
+
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import {
   FaEye,
   FaEyeSlash,
   FaLock,
+  FaPhone,
   FaShoppingBasket,
   FaSpinner,
   FaStore,
@@ -37,6 +38,7 @@ function Register() {
   ] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     role: "customer",
   });
@@ -44,22 +46,30 @@ function Register() {
   const [
     showPassword,
     setShowPassword,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
 
   const [
     message,
     setMessage,
-  ] = useState("");
+  ] = useState(
+    ""
+  );
 
   const [
     loading,
     setLoading,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
 
   const [
-    isSuccess,
-    setIsSuccess,
-  ] = useState(false);
+    success,
+    setSuccess,
+  ] = useState(
+    false
+  );
 
   const handleChange =
     (event) => {
@@ -70,15 +80,20 @@ function Register() {
         event.target;
 
       setFormData(
-        (current) => ({
+        (
+          current
+        ) => ({
           ...current,
+
           [name]:
             value,
         })
       );
 
       setMessage("");
-      setIsSuccess(false);
+      setSuccess(
+        false
+      );
     };
 
   const handleSubmit =
@@ -88,7 +103,9 @@ function Register() {
       event.preventDefault();
 
       setMessage("");
-      setIsSuccess(false);
+      setSuccess(
+        false
+      );
 
       const name =
         formData.name.trim();
@@ -97,6 +114,17 @@ function Register() {
         formData.email
           .trim()
           .toLowerCase();
+
+      const phone =
+        formData.phone
+          .replace(
+            /\D/g,
+            ""
+          )
+          .slice(
+            0,
+            10
+          );
 
       const password =
         formData.password;
@@ -117,7 +145,8 @@ function Register() {
       }
 
       if (
-        name.length < 2
+        name.length <
+        2
       ) {
         setMessage(
           "Name must contain at least 2 characters."
@@ -127,17 +156,32 @@ function Register() {
       }
 
       if (
-        name.length > 80
+        name.length >
+        80
       ) {
         setMessage(
-          "Name must be less than 80 characters."
+          "Name is too long."
         );
 
         return;
       }
 
       if (
-        password.length < 6
+        phone &&
+        !/^[6-9]\d{9}$/.test(
+          phone
+        )
+      ) {
+        setMessage(
+          "Please enter a valid 10-digit Indian mobile number."
+        );
+
+        return;
+      }
+
+      if (
+        password.length <
+        6
       ) {
         setMessage(
           "Password must contain at least 6 characters."
@@ -147,7 +191,8 @@ function Register() {
       }
 
       if (
-        password.length > 128
+        password.length >
+        128
       ) {
         setMessage(
           "Password is too long."
@@ -160,6 +205,7 @@ function Register() {
         ![
           "customer",
           "shopkeeper",
+          "delivery_partner",
         ].includes(
           role
         )
@@ -172,41 +218,38 @@ function Register() {
       }
 
       try {
-        setLoading(true);
+        setLoading(
+          true
+        );
 
         const data =
           await registerUser({
             name,
+
             email,
+
+            phone,
+
             password,
+
             role,
           });
 
-        setIsSuccess(
+        setSuccess(
           true
         );
 
-        if (
-          data?.devOtp
-        ) {
-          setMessage(
-            `Account created! Development OTP: ${data.devOtp}. Continue to login and verify your email.`
-          );
-        } else if (
-          data?.otpSent
-        ) {
-          setMessage(
-            `Account created! We sent a verification OTP to ${email}. Continue to login and verify your email.`
-          );
-        } else {
-          setMessage(
-            `Account created successfully. Please login with ${email} to request your verification OTP.`
-          );
-        }
+        setMessage(
+          data?.message ||
+            "Account created successfully. Check your email for the OTP."
+        );
 
         /*
-          Give the user enough time to
-          read the message.
+          Send the user to Login.
+
+          Login will request an OTP
+          again, so the same login
+          verification flow is used.
         */
 
         window.setTimeout(
@@ -233,7 +276,7 @@ function Register() {
           error
         );
 
-        setIsSuccess(
+        setSuccess(
           false
         );
 
@@ -250,19 +293,18 @@ function Register() {
 
   return (
     <div className="auth-page">
-      <div className="auth-background-decoration auth-decoration-one" />
-
-      <div className="auth-background-decoration auth-decoration-two" />
 
       <Link
         to="/"
         className="auth-back"
       >
         <FaArrowLeft />
+
         Back to Home
       </Link>
 
       <div className="auth-card register-auth-card">
+
         <Link
           to="/"
           className="auth-logo"
@@ -278,6 +320,7 @@ function Register() {
         </Link>
 
         <div className="auth-header">
+
           <span className="auth-welcome-badge">
             JOIN FRESHCART
           </span>
@@ -290,17 +333,19 @@ function Register() {
             Start shopping or selling
             fresh products today.
           </p>
+
         </div>
 
         {message && (
           <div
             className={
-              isSuccess
+              success
                 ? "auth-success"
                 : "auth-error"
             }
           >
-            {isSuccess ? (
+
+            {success ? (
               <FaCheckCircle />
             ) : (
               <FaExclamationCircle />
@@ -309,6 +354,7 @@ function Register() {
             <span>
               {message}
             </span>
+
           </div>
         )}
 
@@ -318,27 +364,27 @@ function Register() {
           }
           className="auth-form"
         >
-          {/* NAME */}
 
           <div className="form-group">
-            <label htmlFor="register-name">
+
+            <label>
               Full Name
             </label>
 
             <div className="input-wrapper">
+
               <FaUser />
 
               <input
-                id="register-name"
                 type="text"
                 name="name"
-                placeholder="Enter your full name"
                 value={
                   formData.name
                 }
                 onChange={
                   handleChange
                 }
+                placeholder="Enter your full name"
                 autoComplete="name"
                 maxLength={80}
                 disabled={
@@ -346,30 +392,31 @@ function Register() {
                 }
                 required
               />
+
             </div>
+
           </div>
 
-          {/* EMAIL */}
-
           <div className="form-group">
-            <label htmlFor="register-email">
+
+            <label>
               Email Address
             </label>
 
             <div className="input-wrapper">
+
               <FaEnvelope />
 
               <input
-                id="register-email"
                 type="email"
                 name="email"
-                placeholder="Enter your email"
                 value={
                   formData.email
                 }
                 onChange={
                   handleChange
                 }
+                placeholder="Enter your email"
                 autoComplete="email"
                 maxLength={160}
                 disabled={
@@ -377,39 +424,87 @@ function Register() {
                 }
                 required
               />
+
             </div>
 
             <small>
-              A verification OTP will
-              be sent to this email.
+              Your login OTP will be
+              sent to this email.
             </small>
+
           </div>
 
-          {/* PASSWORD */}
+          <div className="form-group">
+
+            <label>
+              Mobile Number
+              {" "}
+              <span
+                style={{
+                  color:
+                    "#94a3b8",
+                }}
+              >
+                (optional)
+              </span>
+            </label>
+
+            <div className="input-wrapper">
+
+              <FaPhone />
+
+              <input
+                type="tel"
+                name="phone"
+                value={
+                  formData.phone
+                }
+                onChange={
+                  handleChange
+                }
+                placeholder="10-digit mobile number"
+                autoComplete="tel"
+                inputMode="numeric"
+                maxLength={10}
+                disabled={
+                  loading
+                }
+              />
+
+            </div>
+
+            <small>
+              You can add your phone
+              number for future delivery
+              features.
+            </small>
+
+          </div>
 
           <div className="form-group">
-            <label htmlFor="register-password">
+
+            <label>
               Password
             </label>
 
             <div className="input-wrapper">
+
               <FaLock />
 
               <input
-                id="register-password"
                 type={
                   showPassword
                     ? "text"
                     : "password"
                 }
                 name="password"
-                placeholder="Create a password"
                 value={
                   formData.password
                 }
                 onChange={
                   handleChange
                 }
+                placeholder="Create a password"
                 autoComplete="new-password"
                 maxLength={128}
                 disabled={
@@ -429,9 +524,7 @@ function Register() {
                       !current
                   )
                 }
-                tabIndex={
-                  -1
-                }
+                tabIndex={-1}
               >
                 {showPassword ? (
                   <FaEyeSlash />
@@ -439,12 +532,13 @@ function Register() {
                   <FaEye />
                 )}
               </button>
+
             </div>
+
           </div>
 
-          {/* ROLE */}
-
           <div className="form-group">
+
             <label>
               Account Type
             </label>
@@ -453,18 +547,28 @@ function Register() {
               style={{
                 display:
                   "grid",
-                gridTemplateColumns:
-                  "1fr 1fr",
+
                 gap:
                   "12px",
               }}
             >
+
               <label
                 style={{
+                  display:
+                    "flex",
+
+                  alignItems:
+                    "center",
+
+                  gap:
+                    "8px",
+
                   cursor:
                     "pointer",
                 }}
               >
+
                 <input
                   type="radio"
                   name="role"
@@ -481,24 +585,28 @@ function Register() {
                   }
                 />
 
-                <span
-                  style={{
-                    marginLeft:
-                      "8px",
-                  }}
-                >
-                  <FaShoppingBasket />
-                  {" "}
-                  Customer
-                </span>
+                <FaShoppingBasket />
+
+                Customer
+
               </label>
 
               <label
                 style={{
+                  display:
+                    "flex",
+
+                  alignItems:
+                    "center",
+
+                  gap:
+                    "8px",
+
                   cursor:
                     "pointer",
                 }}
               >
+
                 <input
                   type="radio"
                   name="role"
@@ -515,21 +623,53 @@ function Register() {
                   }
                 />
 
-                <span
-                  style={{
-                    marginLeft:
-                      "8px",
-                  }}
-                >
-                  <FaStore />
-                  {" "}
-                  Shopkeeper
-                </span>
-              </label>
-            </div>
-          </div>
+                <FaStore />
 
-          {/* SUBMIT */}
+                Shopkeeper
+
+              </label>
+
+              <label
+                style={{
+                  display:
+                    "flex",
+
+                  alignItems:
+                    "center",
+
+                  gap:
+                    "8px",
+
+                  cursor:
+                    "pointer",
+                }}
+              >
+
+                <input
+                  type="radio"
+                  name="role"
+                  value="delivery_partner"
+                  checked={
+                    formData.role ===
+                    "delivery_partner"
+                  }
+                  onChange={
+                    handleChange
+                  }
+                  disabled={
+                    loading
+                  }
+                />
+
+                🚚
+
+                Delivery Partner
+
+              </label>
+
+            </div>
+
+          </div>
 
           <button
             type="submit"
@@ -541,23 +681,30 @@ function Register() {
             {loading ? (
               <>
                 <FaSpinner className="fa-spin" />
+
                 Creating Account...
               </>
             ) : (
               "Create Account"
             )}
           </button>
+
         </form>
 
         <div className="auth-footer">
+
           <span>
             Already have an account?
           </span>
 
-          <Link to="/login">
+          <Link
+            to="/login"
+          >
             Login
           </Link>
+
         </div>
+
       </div>
     </div>
   );
