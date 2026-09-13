@@ -2911,3 +2911,349 @@
     height: min(68vw, 320px);
   }
 }
+
+/* =========================================================
+   FreshCart responsive redesign — final normalization
+   Keeps existing component API/classes while removing the
+   need for additional one-off mobile overrides.
+========================================================= */
+
+:root {
+  --fc-content-max: 1440px;
+  --fc-page-pad: clamp(14px, 2.2vw, 32px);
+  --fc-touch: 44px;
+}
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Header */
+.main-header {
+  z-index: 1000;
+}
+
+.header-container {
+  width: min(var(--fc-content-max), calc(100% - 2 * var(--fc-page-pad)));
+  min-width: 0;
+}
+
+.header-actions {
+  min-width: 0;
+  align-items: center;
+}
+
+.header-actions > * {
+  flex: 0 0 auto;
+}
+
+.location-btn,
+.header-icon-btn,
+.mobile-menu-btn,
+.login-header-btn,
+.account-btn {
+  min-width: var(--fc-touch);
+  min-height: var(--fc-touch);
+}
+
+/* Hero/search */
+.hero-content {
+  width: min(var(--fc-content-max), 100%);
+  margin-inline: auto;
+}
+
+.hero-search {
+  min-width: 0;
+}
+
+.hero-search input {
+  min-width: 0;
+}
+
+/* Shared grids should never create viewport overflow. */
+.category-grid,
+.featured-products-grid,
+.customer-products-grid,
+.product-grid,
+.shop-product-grid,
+.sk-product-grid {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Customer product cards — desktop/tablet baseline */
+.customer-products-page .product-grid {
+  align-items: stretch;
+}
+
+.customer-products-page .customer-product-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.customer-products-page .customer-product-image {
+  overflow: hidden;
+}
+
+.customer-products-page .customer-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.customer-products-page .customer-product-body {
+  min-width: 0;
+}
+
+.customer-products-page .customer-product-body h3,
+.customer-products-page .product-description-preview,
+.customer-products-page .discovery-shop-info,
+.customer-products-page .featured-product-bottom {
+  min-width: 0;
+}
+
+.customer-products-page .discovery-shop-info > div {
+  min-width: 0;
+}
+
+.customer-products-page .discovery-shop-info strong,
+.customer-products-page .discovery-shop-info small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customer-products-page .featured-product-action-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 7px;
+}
+
+.customer-products-page .featured-product-action-group > * {
+  min-width: 0;
+  min-height: 44px;
+}
+
+/* Prevent giant fixed hero elements on narrow screens. */
+.hero-floating-card {
+  max-width: min(260px, 72vw);
+}
+
+/* Phone */
+@media (max-width: 767px) {
+  .header-container {
+    width: calc(100% - 24px);
+    gap: 8px;
+  }
+
+  .logo {
+    min-width: 0;
+  }
+
+  .logo strong,
+  .logo span {
+    white-space: nowrap;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .location-btn {
+    max-width: 132px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .main-nav.mobile-nav-open {
+    width: calc(100% - 24px);
+    margin-inline: 12px;
+  }
+
+  .hero-content {
+    width: calc(100% - 24px);
+  }
+
+  .hero-section {
+    overflow: hidden;
+  }
+
+  .hero-search {
+    width: 100%;
+  }
+
+  .hero-search input {
+    font-size: 0.9rem;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Shop/search/catalog pages use one clear horizontal rhythm. */
+  .customer-products-page .product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .customer-products-page .customer-product-card {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    align-items: stretch;
+    min-height: 142px;
+    border-radius: 16px;
+  }
+
+  .customer-products-page .customer-product-image {
+    min-height: 142px;
+    aspect-ratio: auto;
+    padding: 10px;
+  }
+
+  .customer-products-page .customer-product-image img {
+    object-fit: contain;
+  }
+
+  .customer-products-page .customer-product-body {
+    display: flex;
+    min-width: 0;
+    padding: 12px 12px 11px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .customer-products-page .customer-product-body h3 {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    font-size: 0.92rem;
+    line-height: 1.25;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .customer-products-page .product-description-preview {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .customer-products-page .discovery-shop-info {
+    margin-top: 1px;
+    font-size: 0.68rem;
+  }
+
+  .customer-products-page .featured-product-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .customer-products-page .product-price {
+    font-size: 0.96rem;
+  }
+
+  .customer-products-page .featured-product-action-group {
+    flex: 0 0 auto;
+    width: 92px;
+    grid-template-columns: 1fr 40px;
+    gap: 5px;
+  }
+
+  .customer-products-page .featured-product-action-group > * {
+    min-height: 40px;
+  }
+
+  .product-discount-badge,
+  .product-status-badge,
+  .product-status-shop-closed,
+  .product-status-unavailable,
+  .product-status-out,
+  .product-status-low,
+  .product-status-in {
+    font-size: 0.58rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 420px) {
+  .header-container {
+    width: calc(100% - 16px);
+  }
+
+  .header-actions {
+    gap: 4px;
+  }
+
+  .location-btn {
+    max-width: 106px;
+    padding-inline: 9px;
+  }
+
+  .hero-content {
+    width: calc(100% - 16px);
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .customer-products-page .customer-product-card {
+    grid-template-columns: 92px minmax(0, 1fr);
+    min-height: 132px;
+  }
+
+  .customer-products-page .customer-product-image {
+    min-height: 132px;
+    padding: 8px;
+  }
+
+  .customer-products-page .customer-product-body {
+    padding: 10px;
+  }
+
+  .customer-products-page .product-description-preview {
+    display: none;
+  }
+
+  .customer-products-page .featured-product-action-group {
+    width: 86px;
+    grid-template-columns: 1fr 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

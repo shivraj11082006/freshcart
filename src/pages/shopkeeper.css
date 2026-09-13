@@ -973,3 +973,352 @@
     grid-template-columns: repeat(2,minmax(0,1fr));
   }
 }
+
+/* =========================================================
+   FreshCart shopkeeper responsive redesign — final pass
+========================================================= */
+
+.sk-layout {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.sk-sidebar,
+.sk-main,
+.sk-content,
+.sk-header,
+.sk-section,
+.sk-page-header,
+.sk-stats,
+.sk-product-grid,
+.shopkeeper-orders-page {
+  min-width: 0;
+}
+
+.sk-sidebar {
+  width: 248px;
+}
+
+.sk-main {
+  margin-left: 248px;
+  min-height: 100vh;
+}
+
+.sk-header {
+  min-height: 64px;
+  padding-inline: clamp(12px, 2vw, 26px);
+}
+
+.sk-menu-btn,
+.notification-bell,
+.sk-profile-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.sk-menu-btn svg,
+.notification-bell svg,
+.sk-profile-btn svg,
+.sk-nav-icon svg,
+.sk-shop-icon svg,
+.sk-stat-icon svg,
+.sk-logout-btn svg,
+.sk-view-store svg {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+}
+
+.sk-user-area {
+  min-width: 0;
+  gap: 9px;
+}
+
+.sk-user-avatar {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  display: grid;
+  place-items: center;
+}
+
+.sk-user-info {
+  min-width: 0;
+}
+
+.sk-user-info strong,
+.sk-user-info span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-content {
+  width: min(100%, 1600px);
+  margin-inline: auto;
+  padding-inline: clamp(12px, 2vw, 28px);
+}
+
+.sk-page-header,
+.shopkeeper-orders-header,
+.management-header {
+  width: 100%;
+}
+
+.sk-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sk-stat {
+  min-width: 0;
+}
+
+.sk-product-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sk-product-card,
+.shopkeeper-order-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sk-product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sk-product-body,
+.sk-order-content,
+.sk-product-meta {
+  min-width: 0;
+}
+
+.sk-product-body h3,
+.shopkeeper-order-card h3,
+.sk-page-header h1,
+.shopkeeper-orders-header h1,
+.management-header h1 {
+  overflow-wrap: anywhere;
+}
+
+.notification-wrapper {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.notification-dropdown {
+  max-width: min(390px, calc(100vw - 24px));
+}
+
+/* Tablet: keep the sidebar, but reduce its footprint. */
+@media (max-width: 1100px) and (min-width: 781px) {
+  .sk-sidebar {
+    width: 224px;
+  }
+
+  .sk-main {
+    margin-left: 224px;
+  }
+
+  .sk-content {
+    padding-inline: 16px;
+  }
+
+  .sk-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sk-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile: turn the desktop sidebar layout into an actual drawer. */
+@media (max-width: 780px) {
+  .sk-sidebar {
+    width: min(312px, 88vw);
+    max-width: 100vw;
+    transform: translateX(-105%);
+    box-shadow: 20px 0 48px rgba(15, 38, 26, 0.16);
+  }
+
+  .sk-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sk-main {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sk-header {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    min-height: 60px;
+    padding-inline: 10px;
+  }
+
+  .sk-menu-btn {
+    display: inline-grid;
+  }
+
+  .sk-user-info {
+    display: none;
+  }
+
+  .sk-user-area {
+    gap: 5px;
+  }
+
+  .sk-content {
+    width: 100%;
+    padding: 14px 12px 28px;
+  }
+
+  .sk-page-header,
+  .shopkeeper-orders-header,
+  .management-header {
+    gap: 10px;
+  }
+
+  .sk-page-header h1,
+  .shopkeeper-orders-header h1,
+  .management-header h1 {
+    font-size: clamp(1.35rem, 5vw, 1.7rem);
+    line-height: 1.18;
+  }
+
+  .sk-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .sk-stat {
+    min-height: 104px;
+    padding: 13px;
+  }
+
+  .sk-stat-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .sk-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .sk-product-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .sk-product-action,
+  .sk-primary-btn,
+  .sk-outline-btn,
+  .shopkeeper-order-actions button {
+    min-height: 42px;
+  }
+
+  .notification-dropdown {
+    position: fixed;
+    top: 68px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: none;
+    max-height: min(72vh, 560px);
+  }
+}
+
+@media (max-width: 520px) {
+  .sk-content {
+    padding-inline: 10px;
+  }
+
+  .sk-welcome,
+  .sk-section {
+    padding: 13px;
+  }
+
+  .sk-stats {
+    gap: 8px;
+  }
+
+  .sk-stat {
+    min-height: 98px;
+    padding: 11px;
+  }
+
+  .sk-stat strong {
+    margin-top: 8px;
+    font-size: 1.15rem;
+  }
+
+  .sk-product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sk-product-card {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .sk-product-img {
+    min-height: 118px;
+    aspect-ratio: auto;
+  }
+
+  .sk-product-body {
+    padding: 11px;
+  }
+
+  .sk-product-actions {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 390px) {
+  .sk-header {
+    min-height: 56px;
+    padding-inline: 8px;
+  }
+
+  .sk-menu-btn,
+  .notification-bell,
+  .sk-profile-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .sk-user-avatar {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  .sk-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .sk-stat {
+    min-height: 86px;
+  }
+
+  .notification-dropdown {
+    top: 62px;
+    right: 8px;
+    left: 8px;
+  }
+}
