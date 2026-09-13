@@ -39,9 +39,15 @@ function AddProduct() {
       imagePreview: "",
       description: "",
       minimumOrder: 1,
-      // A new product starts inactive until stock is available.
-      isActive: false,
+
+      // New products are active by default.
+      // If stock is 0, the stock handler will
+      // automatically make the product inactive.
+      isActive: true,
     });
+
+  const [availabilityManuallySet, setAvailabilityManuallySet] =
+    useState(false);
 
   const [message, setMessage] =
     useState("");
@@ -74,11 +80,21 @@ function AddProduct() {
             const stockValue =
               Number(value);
 
+            if (
+              !availabilityManuallySet
+            ) {
+              return {
+                ...current,
+                [name]: value,
+                isActive:
+                  Number.isFinite(stockValue) &&
+                  stockValue > 0,
+              };
+            }
+
             return {
               ...current,
               [name]: value,
-              // Do not leave the UI in a misleading
-              // "Active but unavailable" state.
               isActive:
                 Number.isFinite(stockValue) &&
                 stockValue > 0
@@ -197,6 +213,8 @@ function AddProduct() {
 
         return;
       }
+
+      setAvailabilityManuallySet(true);
 
       setFormData(
         (current) => ({
@@ -366,6 +384,12 @@ function AddProduct() {
           )
         );
 
+        /*
+          Product is active by default when
+          stock is greater than 0.
+
+          If stock is 0, it will be inactive.
+        */
         productData.append(
           "isActive",
           String(

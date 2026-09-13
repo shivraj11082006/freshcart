@@ -707,3 +707,269 @@
 @media (prefers-reduced-motion: reduce) {
   .sk-sidebar { transition: none; }
 }
+
+/* =========================================================
+   FreshCart seller workspace — visual bridge to customer UI
+========================================================= */
+:root {
+  --sk-bg: #f2f6f4;
+  --sk-surface: #fff;
+  --sk-ink: #13251b;
+  --sk-text: #304238;
+  --sk-muted: #708078;
+  --sk-border: #dfe8e2;
+  --sk-green: #118a59;
+  --sk-green-dark: #087146;
+  --sk-green-soft: #e9f8f0;
+  --sk-danger: #d64b4b;
+  --sk-warning: #b97810;
+  --sk-shadow: 0 16px 42px rgba(18,44,30,.08);
+}
+
+.sk-layout {
+  background:
+    radial-gradient(circle at 100% 0, rgba(17,138,89,.06), transparent 26rem),
+    var(--sk-bg);
+}
+.sk-sidebar {
+  width: 258px;
+  padding: 17px 14px;
+  background:
+    linear-gradient(180deg,#0c2519 0%,#0d2117 72%,#0b1b13 100%);
+  box-shadow: 16px 0 42px rgba(7,25,15,.13);
+}
+.sk-brand-link { min-height: 46px; }
+.sk-brand-icon {
+  border-radius: 13px;
+  box-shadow: 0 10px 24px rgba(17,148,94,.22);
+}
+.sk-navigation { gap: 6px; margin-top: 18px; }
+.sk-navigation a,
+.sk-navigation button {
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: .78rem;
+}
+.sk-navigation a.active {
+  background: linear-gradient(90deg,rgba(64,200,132,.20),rgba(255,255,255,.07));
+  box-shadow: inset 3px 0 0 #4fd694;
+}
+.sk-shop-card { border-radius: 15px; }
+.sk-main { margin-left: 258px; }
+.sk-header {
+  min-height: 74px;
+  padding-inline: 28px;
+  box-shadow: 0 5px 22px rgba(18,44,30,.035);
+}
+.sk-menu-btn,
+.sk-mobile-close,
+.notification-bell {
+  border-radius: 12px;
+}
+.sk-content,
+.shopkeeper-orders-page {
+  width: min(1200px, calc(100% - 48px));
+  padding-top: 30px;
+}
+.sk-page-header,
+.shopkeeper-orders-header,
+.management-header { margin-bottom: 20px; }
+.sk-page-header h1,
+.shopkeeper-orders-header h1,
+.management-header h1 {
+  font-size: clamp(1.8rem,3vw,2.4rem);
+}
+.sk-welcome {
+  border-radius: 20px;
+  border-color: #cfe7d9;
+  background: linear-gradient(135deg,#edf9f2,#fff 72%);
+  box-shadow: 0 10px 30px rgba(18,44,30,.055);
+}
+.sk-stats { gap: 14px; }
+.sk-stat {
+  min-height: 120px;
+  border-radius: 17px;
+  padding: 17px;
+  border-color: rgba(17,138,89,.09);
+  box-shadow: 0 7px 22px rgba(18,44,30,.045);
+}
+.sk-stat:hover {
+  border-color: rgba(17,138,89,.20);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(18,44,30,.08);
+}
+.sk-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+.sk-section {
+  border-radius: 18px;
+  border-color: rgba(17,138,89,.09);
+  box-shadow: 0 8px 24px rgba(18,44,30,.045);
+}
+.sk-quick-actions { gap: 11px; }
+.sk-quick-action {
+  min-height: 84px;
+  border-radius: 14px;
+  border-color: rgba(17,138,89,.10);
+}
+.sk-quick-action:hover {
+  border-color: rgba(17,138,89,.25);
+  background: linear-gradient(135deg,#f0faf4,#fff);
+}
+.sk-product-card,
+.shopkeeper-order-card {
+  border-radius: 17px;
+  border-color: rgba(17,138,89,.09);
+  box-shadow: 0 7px 22px rgba(18,44,30,.045);
+}
+.sk-product-card:hover,
+.shopkeeper-order-card:hover {
+  box-shadow: 0 16px 32px rgba(18,44,30,.08);
+  transform: translateY(-2px);
+}
+.sk-product-img { background: linear-gradient(145deg,#f8fcf9,#eef7f2); }
+.sk-product-action,
+.sk-primary-btn,
+.sk-outline-btn,
+.shopkeeper-order-actions button {
+  min-height: 42px;
+  border-radius: 11px;
+}
+.sk-primary-btn {
+  box-shadow: 0 8px 18px rgba(17,138,89,.12);
+}
+.shopkeeper-order-filters button {
+  min-height: 40px;
+  border-radius: 999px;
+}
+.shopkeeper-status {
+  border-radius: 999px;
+  padding-inline: 9px;
+}
+.notification-dropdown {
+  border-radius: 17px;
+  box-shadow: var(--sk-shadow);
+}
+.notification-item { border-radius: 11px; }
+.sk-content .form-card,
+.sk-content .shop-settings-card {
+  border-radius: 18px;
+}
+.shop-status-card { border-radius: 14px; }
+.shop-toggle { border-radius: 999px; }
+
+@media (max-width: 1050px) {
+  .sk-content,
+  .shopkeeper-orders-page { width: min(calc(100% - 34px), 1200px); }
+  .sk-main { margin-left: 238px; }
+  .sk-sidebar { width: 238px; }
+}
+
+@media (max-width: 780px) {
+  .sk-sidebar { width: min(86vw, 300px); }
+  .sk-header { min-height: 66px; padding-inline: 12px; }
+  .sk-content,
+  .shopkeeper-orders-page { width: calc(100% - 24px); padding-top: 20px; }
+  .sk-page-header,
+  .shopkeeper-orders-header,
+  .management-header { gap: 13px; }
+  .sk-page-header h1,
+  .shopkeeper-orders-header h1,
+  .management-header h1 { font-size: 1.7rem; }
+  .sk-stat { min-height: 110px; }
+}
+
+@media (max-width: 560px) {
+  .sk-content,
+  .shopkeeper-orders-page { width: calc(100% - 16px); }
+  .sk-section { padding: 14px; }
+  .sk-welcome { padding: 16px; }
+  .sk-stat { min-height: 100px; padding: 14px; }
+  .sk-product-card { border-radius: 15px; }
+  .shopkeeper-order-card { border-radius: 15px; }
+  .notification-dropdown { right: -3px; }
+}
+
+/* =========================================================
+   Shopkeeper second UX pass — image density + touch sizing
+========================================================= */
+.sk-product-img {
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  height: auto;
+  padding: 9px;
+  background: linear-gradient(145deg,#f8fcf9,#eef7f2);
+}
+
+.sk-product-img img {
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.sk-product-action,
+.sk-primary-btn,
+.sk-outline-btn,
+.shopkeeper-order-actions button {
+  min-height: 40px;
+}
+
+.sk-product-actions {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 6px;
+}
+
+.sk-product-action {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 7px;
+  font-size: .65rem;
+}
+
+.sk-primary-btn,
+.sk-outline-btn {
+  min-height: 42px;
+}
+
+.sk-stat:hover,
+.sk-product-card:hover,
+.shopkeeper-order-card:hover {
+  transform: none;
+}
+
+.sk-product-card:hover {
+  border-color: rgba(17,138,89,.18);
+  box-shadow: 0 16px 30px rgba(18,44,30,.08);
+}
+
+@media (max-width: 780px) {
+  .sk-product-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 10px;
+  }
+
+  .sk-product-body {
+    padding: 11px;
+  }
+
+  .sk-product-body h3 {
+    font-size: .77rem;
+    min-height: 2.6em;
+  }
+
+  .sk-product-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  .sk-product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sk-product-actions {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}

@@ -2117,3 +2117,797 @@
 }
 .shopkeeper-refresh-btn { white-space: nowrap; }
 .simple-header-title { color: var(--fc-ink); font-weight: 900; }
+
+/* =========================================================
+   FreshCart UI polish — shared customer surfaces
+========================================================= */
+.main-header {
+  box-shadow: 0 6px 26px rgba(18,44,30,.045);
+}
+.header-container {
+  min-height: 74px;
+}
+.logo { font-size: 1.02rem; }
+.logo-icon {
+  border-radius: 13px;
+  box-shadow: 0 6px 18px rgba(21,138,90,.10);
+}
+.main-nav a,
+.mobile-location-item {
+  min-height: 42px;
+  border-radius: 12px;
+}
+.main-nav a[aria-current="page"] {
+  box-shadow: inset 0 0 0 1px rgba(17,138,89,.08);
+}
+
+.location-btn,
+.notification-header-btn,
+.cart-header-btn,
+.account-header-btn,
+.login-header-btn,
+.mobile-menu-btn {
+  min-height: 42px;
+  border-radius: 12px;
+  box-shadow: var(--fc-shadow-xs);
+}
+
+.hero-section {
+  overflow: hidden;
+  border-bottom: 1px solid rgba(21,138,90,.06);
+  background:
+    radial-gradient(circle at 90% 8%, rgba(21,138,90,.14), transparent 25rem),
+    linear-gradient(135deg,#f5fbf7 0%,#eef8f2 52%,#f9fcfa 100%);
+}
+.hero-content {
+  padding-top: 68px;
+  padding-bottom: 78px;
+}
+.hero-text h1 {
+  letter-spacing: -.065em;
+  line-height: 1.04;
+}
+.hero-badge {
+  border: 1px solid rgba(17,138,89,.10);
+  box-shadow: var(--fc-shadow-xs);
+}
+.hero-search {
+  min-height: 58px;
+  border: 1px solid rgba(17,138,89,.13);
+  border-radius: 17px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 12px 28px rgba(18,44,30,.07);
+}
+.hero-search input { min-height: 46px; }
+.hero-search button { min-height: 46px; border-radius: 13px; }
+.hero-image-area { min-height: 430px; }
+.hero-emoji {
+  filter: drop-shadow(0 24px 30px rgba(18,44,30,.14));
+}
+.hero-floating-card {
+  border-color: rgba(21,138,90,.12);
+  box-shadow: var(--fc-shadow-lg);
+}
+
+.category-section,
+.featured-section,
+.benefits-section {
+  padding-top: 58px;
+  padding-bottom: 58px;
+}
+.section-header { margin-bottom: 20px; }
+.section-label {
+  color: var(--fc-primary-strong);
+  letter-spacing: .14em;
+}
+.category-grid { gap: 13px; }
+.category-card {
+  min-height: 110px;
+  border-radius: 16px;
+  border-color: rgba(17,138,89,.10);
+  background: rgba(255,255,255,.94);
+  box-shadow: var(--fc-shadow-xs);
+}
+.category-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(17,138,89,.20);
+  box-shadow: 0 14px 28px rgba(18,44,30,.09);
+}
+.category-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.featured-products-grid,
+.customer-products-grid,
+.product-grid,
+.shop-product-grid {
+  gap: 15px;
+}
+.featured-product-card,
+.customer-product-card,
+.product-card,
+.shop-product-card,
+.home-product-card {
+  overflow: hidden;
+  border-radius: 18px;
+  border-color: rgba(17,138,89,.10);
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(18,44,30,.055);
+}
+.featured-product-card:hover,
+.customer-product-card:hover,
+.product-card:hover,
+.shop-product-card:hover,
+.home-product-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(17,138,89,.18);
+  box-shadow: 0 18px 38px rgba(18,44,30,.10);
+}
+.featured-product-image,
+.customer-product-image,
+.shop-product-image {
+  background: linear-gradient(145deg,#f7fbf8,#eff7f2);
+}
+.featured-product-content,
+.customer-product-body,
+.shop-product-body {
+  padding: 14px;
+}
+.featured-product-title-link,
+.customer-product-card h3,
+.shop-product-card h3 {
+  color: var(--fc-ink);
+}
+.product-price {
+  color: var(--fc-primary-strong);
+  font-size: 1rem;
+}
+.product-discount-badge {
+  border-radius: 999px;
+  padding-inline: 8px;
+}
+
+.professional-primary-btn,
+.primary-button,
+.primary-btn,
+.primary-form-btn,
+.form-submit-btn,
+.create-shop-btn,
+.auth-submit,
+.hero-primary-btn,
+.checkout-place-btn,
+.cart-checkout-btn,
+.customer-cart-btn,
+.shop-cart-button,
+.product-cart-btn,
+.order-shop-again {
+  min-height: 46px;
+  border-radius: 12px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(17,138,89,.14);
+}
+.professional-secondary-btn,
+.professional-outline-btn,
+.hero-secondary-btn {
+  min-height: 46px;
+  border-radius: 12px;
+}
+
+.product-status-badge,
+.product-status-out,
+.stock-warning-box,
+.availability-box,
+.form-message,
+.checkout-error,
+.error-message {
+  border-radius: 12px;
+}
+
+/* discovery / shop surfaces */
+.discovery-search-box,
+.product-search-box,
+.shop-search-bar {
+  min-height: 52px;
+  border-radius: 14px;
+}
+.discovery-search-box input,
+.product-search-box input,
+.shop-search-bar input {
+  min-height: 46px;
+}
+.discovery-filter-toggle,
+.discovery-clear-btn {
+  min-height: 44px;
+  border-radius: 12px;
+}
+.discovery-category-row button {
+  min-height: 40px;
+  border-radius: 999px;
+}
+
+/* forms */
+.form-page,
+.create-shop-page,
+.auth-page,
+.professional-account-page,
+.checkout-modern-page,
+.cart-modern-page,
+.professional-orders-page,
+.product-details-page,
+.shop-page-modern,
+.success-page {
+  animation: fc-fade-up .28s ease both;
+}
+.form-container,
+.create-shop-container,
+.checkout-container,
+.professional-account-container,
+.cart-page-container,
+.product-details-container,
+.shop-container {
+  padding-top: 26px;
+}
+.form-card,
+.create-shop-form,
+.main-form,
+.shop-settings-card,
+.checkout-card,
+.checkout-summary,
+.account-profile-card,
+.account-security-section,
+.account-actions-card {
+  border-radius: 18px;
+  border-color: rgba(17,138,89,.09);
+  box-shadow: 0 8px 26px rgba(18,44,30,.055);
+}
+.form-group label,
+.create-shop-field label,
+.account-form-group label {
+  margin-bottom: 7px;
+  color: var(--fc-ink);
+  font-size: .75rem;
+  font-weight: 800;
+}
+.form-group input,
+.form-group textarea,
+.form-group select,
+.create-shop-input,
+.create-shop-textarea,
+.account-form-group input,
+.account-form-group textarea,
+.account-form-group select,
+.input-wrapper input,
+.input-with-icon input {
+  min-height: 46px;
+  border-radius: 12px;
+  border-color: var(--fc-border-strong);
+  background: #fbfdfc;
+  color: var(--fc-ink);
+}
+.form-group textarea,
+.create-shop-textarea,
+.account-form-group textarea { min-height: 120px; }
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.create-shop-input:focus,
+.create-shop-textarea:focus,
+.account-form-group input:focus,
+.account-form-group textarea:focus,
+.account-form-group select:focus,
+.input-wrapper input:focus,
+.input-with-icon input:focus {
+  border-color: var(--fc-primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(17,138,89,.09);
+}
+.product-upload-box {
+  border-radius: 16px;
+  border-color: #cfe0d5;
+  background: linear-gradient(145deg,#fbfefc,#f4faf6);
+}
+.image-upload-label { min-height: 230px; }
+.availability-box {
+  border: 1px solid #cfe5d8;
+  background: linear-gradient(135deg,#f0faf4,#fbfefc);
+}
+.availability-box button {
+  min-width: 108px;
+  min-height: 42px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+/* authentication */
+.auth-page {
+  min-height: 100vh;
+  padding: 30px 16px;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(17,138,89,.12), transparent 23rem),
+    linear-gradient(145deg,#f4faf6,#eff6f2);
+}
+.auth-card,
+.register-auth-card {
+  border-radius: 24px;
+  border-color: rgba(17,138,89,.10);
+  box-shadow: var(--fc-shadow-lg);
+}
+.auth-submit { width: 100%; }
+.password-toggle { min-width: 42px; min-height: 42px; }
+
+/* account / orders / checkout */
+.cart-page-heading,
+.orders-page-header,
+.checkout-topbar,
+.customer-products-heading,
+.shop-heading { gap: 12px; }
+.cart-summary-card,
+.checkout-summary { position: sticky; }
+.cart-item,
+.customer-order-card,
+.checkout-shop-block {
+  border-radius: 16px;
+  border-color: rgba(17,138,89,.09);
+}
+.quantity-control button,
+.quantity-controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+/* empty/loading states */
+.empty-state,
+.professional-empty-orders,
+.discovery-empty-state,
+.notifications-empty {
+  border-radius: 18px;
+  border: 1px dashed #cfe0d5;
+  background: rgba(255,255,255,.72);
+}
+.page-loader,
+.products-loading,
+.account-loading {
+  padding: 40px 18px;
+  border-radius: 18px;
+}
+
+/* Footer */
+.main-footer {
+  margin-top: 40px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(80,180,125,.16), transparent 26rem),
+    #0f2419;
+}
+.footer-links { row-gap: 8px; }
+.footer-links a { min-height: 38px; display: inline-flex; align-items: center; }
+
+/* Touch-first responsive refinements */
+@media (max-width: 900px) {
+  .header-container { padding-block: 7px; }
+  .header-actions { margin-left: auto; }
+  .main-nav { order: 10; }
+  .hero-content { padding-top: 54px; padding-bottom: 60px; }
+  .hero-image-area { min-height: 350px; }
+  .cart-summary-card,
+  .checkout-summary { position: static; }
+}
+
+@media (max-width: 700px) {
+  .category-grid,
+  .featured-products-grid,
+  .customer-products-grid,
+  .product-grid,
+  .shop-product-grid { gap: 10px; }
+  .featured-product-card,
+  .customer-product-card,
+  .product-card,
+  .shop-product-card,
+  .home-product-card { border-radius: 15px; }
+  .featured-product-content,
+  .customer-product-body,
+  .shop-product-body { padding: 12px; }
+  .section-header { gap: 10px; }
+  .section-header h2 { font-size: 1.05rem; }
+  .form-container,
+  .create-shop-container,
+  .checkout-container,
+  .professional-account-container,
+  .cart-page-container,
+  .product-details-container,
+  .shop-container { padding-top: 18px; }
+  .form-card,
+  .create-shop-form,
+  .main-form,
+  .shop-settings-card,
+  .checkout-card,
+  .checkout-summary,
+  .account-profile-card,
+  .account-security-section,
+  .account-actions-card { padding: 15px; }
+}
+
+@media (max-width: 480px) {
+  .hero-content { padding-top: 40px; padding-bottom: 48px; }
+  .hero-buttons { width: 100%; }
+  .hero-buttons > * { flex: 1 1 100%; }
+  .hero-primary-btn,
+  .hero-secondary-btn { width: 100%; }
+  .category-card { min-height: 98px; padding: 12px; }
+  .featured-product-image,
+  .customer-product-image,
+  .shop-product-image { min-height: 205px; }
+  .quantity-control button,
+  .quantity-controls button { width: 38px; height: 38px; }
+  .success-card { border-radius: 19px; }
+}
+
+/* =========================================================
+   FreshCart — second UX pass
+   Image proportions, compact card actions, true touch targets,
+   and mobile shopping density.
+========================================================= */
+
+/* Product imagery: preserve the whole product instead of
+   cropping packaging/labels. */
+.featured-product-image,
+.customer-product-image,
+.shop-product-image,
+.sk-product-img {
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  height: auto;
+  padding: 10px;
+  background: linear-gradient(145deg,#f7fbf8,#edf6f1);
+}
+
+.featured-product-image img,
+.customer-product-image img,
+.shop-product-image img,
+.sk-product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+/* Badges stay readable without covering too much of the image. */
+.product-status-badge,
+.product-discount-badge,
+.discount-badge,
+.product-status-out,
+.product-status-badge {
+  line-height: 1;
+}
+
+/* Card actions are deliberately smaller than page-level CTAs. */
+.featured-product-action-group,
+.shop-product-actions,
+.customer-product-card .featured-product-action-group {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 7px;
+  width: 100%;
+}
+
+.featured-product-action-group > *,
+.shop-product-actions > * {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding-inline: 8px;
+  border-radius: 10px;
+  font-size: .67rem;
+}
+
+.product-cart-btn,
+.product-view-btn,
+.shop-cart-button,
+.featured-view-btn {
+  min-height: 40px;
+  padding-inline: 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* Page-level actions remain comfortably tappable. */
+.professional-primary-btn,
+.professional-secondary-btn,
+.professional-outline-btn,
+.primary-button,
+.primary-btn,
+.primary-form-btn,
+.form-submit-btn,
+.create-shop-btn,
+.auth-submit,
+.hero-primary-btn,
+.hero-secondary-btn,
+.checkout-place-btn,
+.cart-checkout-btn {
+  min-height: 46px;
+}
+
+.back-btn,
+.home-btn,
+.text-back,
+.checkout-back-link,
+.orders-back-btn,
+.notification-back-btn {
+  min-height: 40px;
+  font-size: .72rem;
+}
+
+/* Touch targets for icon-only controls. */
+.cart-delete-btn,
+.cart-remove-btn,
+.quantity-control button,
+.quantity-controls button,
+.password-toggle,
+.notification-header-btn,
+.cart-header-btn,
+.account-header-btn,
+.login-header-btn,
+.mobile-menu-btn {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+/* Cart/order thumbnails should never crop food/product packaging. */
+.cart-item-image,
+.customer-order-item-image,
+.success-order-image,
+.order-product-image {
+  background: #f0f5f2;
+}
+
+.cart-item-image img,
+.customer-order-item-image img,
+.success-order-image img,
+.order-product-image img {
+  object-fit: contain;
+  padding: 5px;
+}
+
+/* Product detail: large, calm image stage without a giant empty block. */
+.product-details-image,
+.product-detail-image {
+  min-height: 0;
+  height: min(58vw, 560px);
+  aspect-ratio: 1 / 1;
+  max-height: 560px;
+  padding: 18px;
+  background: linear-gradient(145deg,#f7fbf8,#edf6f1);
+}
+
+.product-details-image img,
+.product-detail-image img {
+  object-fit: contain;
+  border-radius: 14px;
+}
+
+/* Better visual hierarchy inside product cards. */
+.featured-product-content,
+.customer-product-body,
+.shop-product-body {
+  min-width: 0;
+}
+
+.featured-product-title-link,
+.customer-product-card h3,
+.shop-product-card h3 {
+  min-height: 2.7em;
+  margin-bottom: 5px;
+}
+
+.product-shopkeeper,
+.product-shop-name,
+.shop-info-line,
+.shop-product-price {
+  line-height: 1.35;
+}
+
+/* Keep compact content from forcing uneven cards. */
+.product-shopkeeper,
+.product-shop-name,
+.shop-info-line {
+  min-height: 1.35em;
+}
+
+/* Search/filter controls use 44px for reliable touch input without
+   making the entire interface feel oversized. */
+.shop-search-bar,
+.product-search-box,
+.discovery-search-box {
+  min-height: 50px;
+}
+
+.shop-search-bar input,
+.product-search-box input,
+.discovery-search-box input {
+  min-height: 44px;
+}
+
+.shop-category-row button,
+.discovery-category-row button,
+.shopkeeper-order-filters button {
+  min-height: 40px;
+}
+
+/* Form submit buttons should visually dominate secondary actions. */
+.form-page .primary-button,
+.main-form .primary-button,
+.create-shop-form .create-shop-btn {
+  width: 100%;
+  min-height: 48px;
+}
+
+.product-upload-box {
+  max-width: 100%;
+}
+
+.image-upload-label {
+  min-height: 205px;
+  padding: 20px;
+}
+
+.product-image-preview {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  padding: 12px;
+}
+
+.product-image-preview img {
+  width: min(100%, 430px);
+  height: min(52vw, 360px);
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: linear-gradient(145deg,#f7fbf8,#edf6f1);
+}
+
+.remove-product-image {
+  width: 100%;
+  max-width: 430px;
+  margin-top: 0;
+}
+
+/* Avoid sticky summaries becoming awkward on small screens. */
+@media (max-width: 900px) {
+  .cart-summary-card,
+  .cart-summary,
+  .checkout-summary {
+    position: static;
+  }
+
+  .product-details-image,
+  .product-detail-image {
+    width: 100%;
+    height: min(82vw, 520px);
+    max-height: 520px;
+  }
+}
+
+/* Keep two product columns on phones: grocery shopping is much easier
+   to scan when products do not become enormous one-per-row cards. */
+@media (max-width: 700px) {
+  .featured-products-grid,
+  .customer-products-grid,
+  .product-grid,
+  .shop-product-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 10px;
+  }
+
+  .featured-product-image,
+  .customer-product-image,
+  .shop-product-image,
+  .sk-product-img {
+    padding: 8px;
+  }
+
+  .featured-product-content,
+  .customer-product-body,
+  .shop-product-body {
+    padding: 10px;
+  }
+
+  .featured-product-title-link,
+  .customer-product-card h3,
+  .shop-product-card h3 {
+    min-height: 2.55em;
+    font-size: .78rem;
+  }
+
+  .product-price {
+    font-size: .91rem;
+  }
+
+  .product-discount-badge,
+  .discount-badge,
+  .product-status-badge,
+  .product-status-out {
+    font-size: .55rem;
+  }
+
+  .featured-product-action-group,
+  .shop-product-actions,
+  .customer-product-card .featured-product-action-group {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .featured-product-action-group > *,
+  .shop-product-actions > * {
+    min-height: 38px;
+    font-size: .64rem;
+  }
+
+  .cart-item-image {
+    width: 68px;
+    height: 68px;
+  }
+
+  .cart-item {
+    grid-template-columns: 68px minmax(0,1fr);
+  }
+
+  .product-details-image,
+  .product-detail-image {
+    height: min(78vw, 430px);
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 390px) {
+  .featured-products-grid,
+  .customer-products-grid,
+  .product-grid,
+  .shop-product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .featured-product-image,
+  .customer-product-image,
+  .shop-product-image,
+  .sk-product-img {
+    aspect-ratio: 1.18 / 1;
+  }
+
+  .featured-product-action-group,
+  .shop-product-actions,
+  .customer-product-card .featured-product-action-group {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-primary-btn,
+  .hero-secondary-btn {
+    min-height: 46px;
+  }
+
+  .form-card,
+  .create-shop-form,
+  .main-form,
+  .checkout-card,
+  .checkout-summary,
+  .shop-settings-card {
+    padding: 14px;
+  }
+
+  .availability-box {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .availability-box button {
+    width: 100%;
+  }
+
+  .product-image-preview img {
+    height: min(68vw, 320px);
+  }
+}

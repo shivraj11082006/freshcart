@@ -148,3 +148,47 @@ textarea:disabled {
 @media (max-width: 480px) {
   body { font-size: 14px; }
 }
+
+/* =========================================================
+   FreshCart UI foundation — responsive polish layer
+   Keeps the existing component API/classes while tightening
+   consistency, accessibility, and touch behavior.
+========================================================= */
+:root {
+  --fc-primary: #118a59;
+  --fc-primary-strong: #087146;
+  --fc-primary-soft: #e9f8f0;
+  --fc-primary-soft-2: #f3fbf7;
+  --fc-accent: #f2b84b;
+  --fc-danger: #d94b4b;
+  --fc-warning: #b97810;
+  --fc-info: #2f68c9;
+  --fc-ink: #13251b;
+  --fc-text: #304238;
+  --fc-muted: #708078;
+  --fc-border: #dfe8e2;
+  --fc-border-strong: #cbd8d0;
+  --fc-surface: #fff;
+  --fc-surface-muted: #f7faf8;
+  --fc-page: #f2f6f4;
+  --fc-shadow-xs: 0 2px 8px rgba(18, 44, 30, .04);
+  --fc-shadow-sm: 0 8px 24px rgba(18, 44, 30, .07);
+  --fc-shadow: 0 16px 46px rgba(18, 44, 30, .09);
+  --fc-shadow-lg: 0 28px 80px rgba(18, 44, 30, .13);
+  --fc-radius-xs: 9px;
+  --fc-radius-sm: 12px;
+  --fc-radius: 16px;
+  --fc-radius-lg: 22px;
+  --fc-radius-xl: 30px;
+  --fc-content: 1240px;
+  --fc-transition: 180ms cubic-bezier(.2,.75,.2,1);
+}
+
+@media (hover: hover) {
+  a:hover,
+  button:hover { color: inherit; }
+}
+
+@media (max-width: 900px) {
+  body { background: var(--fc-page); }
+}
