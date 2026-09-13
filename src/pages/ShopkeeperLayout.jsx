@@ -140,11 +140,17 @@ function ShopkeeperLayout({
   const logout = () => {
     clearAuthData();
 
+    /*
+      Do not force a page reload here.
+
+      React Router changes the route to /login.
+      A forced reload can reload the old
+      /shopkeeper-dashboard URL on a deployed
+      SPA and cause a 404: NOT_FOUND error.
+    */
     navigate("/login", {
       replace: true,
     });
-
-    window.location.reload();
   };
 
   const handleNotification =

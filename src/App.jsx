@@ -348,6 +348,7 @@ function App() {
         navigate(
           "/login"
         );
+
         return;
       }
 
@@ -592,6 +593,31 @@ function App() {
                 }
               >
                 My Orders
+              </Link>
+            )}
+
+            {user?.role ===
+            "delivery_partner" ? (
+              <Link
+                to="/delivery-dashboard"
+                onClick={() =>
+                  setMobileMenu(
+                    false
+                  )
+                }
+              >
+                🚚 Delivery Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/register?role=delivery_partner"
+                onClick={() =>
+                  setMobileMenu(
+                    false
+                  )
+                }
+              >
+                🚚 Delivery Partner
               </Link>
             )}
 
